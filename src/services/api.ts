@@ -1,7 +1,10 @@
-// Mock API service - Replace with real API calls when backend is ready
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/api';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://digi-beta.dtvc.local:8214/v2';
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+// Get API key from environment
+const getHeaders = () => ({
+  'Content-Type': 'application/json',
+  'Authorization': `Bearer ${import.meta.env.VITE_API_KEY || ''}`,
+});
 
 // Mock data
 const mockUsers = [
@@ -26,119 +29,144 @@ const mockRoles = [
 
 export const authApi = {
   login: async (email: string, password: string) => {
-    await delay(500);
-    const user = mockUsers.find(u => u.email === email);
-    if (!user || password !== 'password') {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ email, password }),
+    });
+    if (!response.ok) {
       throw new Error('Invalid credentials');
     }
-    return user;
+    return response.json();
   },
 };
 
 export const usersApi = {
   getAll: async () => {
-    await delay(300);
-    return mockUsers;
+    const response = await fetch(`${API_BASE_URL}/usuaris`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch users');
+    return response.json();
   },
   getById: async (id: string) => {
-    await delay(300);
-    const user = mockUsers.find(u => u.id === id);
-    if (!user) throw new Error('User not found');
-    return user;
+    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('User not found');
+    return response.json();
   },
   create: async (data: Omit<typeof mockUsers[0], 'id'>) => {
-    await delay(300);
-    return { id: String(Date.now()), ...data };
+    const response = await fetch(`${API_BASE_URL}/usuaris`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to create user');
+    return response.json();
   },
   update: async (id: string, data: Partial<typeof mockUsers[0]>) => {
-    await delay(300);
-    const user = mockUsers.find(u => u.id === id);
-    if (!user) throw new Error('User not found');
-    return { ...user, ...data };
+    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to update user');
+    return response.json();
   },
   delete: async (id: string) => {
-    await delay(300);
+    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to delete user');
     return { success: true };
   },
 };
 
 export const profilesApi = {
   getAll: async () => {
-    await delay(300);
     return mockProfiles;
   },
   getById: async (id: string) => {
-    await delay(300);
     const profile = mockProfiles.find(p => p.id === id);
     if (!profile) throw new Error('Profile not found');
     return profile;
   },
   create: async (data: Omit<typeof mockProfiles[0], 'id'>) => {
-    await delay(300);
     return { id: String(Date.now()), ...data };
   },
   update: async (id: string, data: Partial<typeof mockProfiles[0]>) => {
-    await delay(300);
     const profile = mockProfiles.find(p => p.id === id);
     if (!profile) throw new Error('Profile not found');
     return { ...profile, ...data };
   },
   delete: async (id: string) => {
-    await delay(300);
     return { success: true };
   },
 };
 
 export const groupsApi = {
   getAll: async () => {
-    await delay(300);
     return mockGroups;
   },
   getById: async (id: string) => {
-    await delay(300);
     const group = mockGroups.find(g => g.id === id);
     if (!group) throw new Error('Group not found');
     return group;
   },
   create: async (data: Omit<typeof mockGroups[0], 'id' | 'memberCount'>) => {
-    await delay(300);
     return { id: String(Date.now()), memberCount: 0, ...data };
   },
   update: async (id: string, data: Partial<typeof mockGroups[0]>) => {
-    await delay(300);
     const group = mockGroups.find(g => g.id === id);
     if (!group) throw new Error('Group not found');
     return { ...group, ...data };
   },
   delete: async (id: string) => {
-    await delay(300);
     return { success: true };
   },
 };
 
 export const rolesApi = {
   getAll: async () => {
-    await delay(300);
-    return mockRoles;
+    const response = await fetch(`${API_BASE_URL}/rols`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch roles');
+    return response.json();
   },
   getById: async (id: string) => {
-    await delay(300);
-    const role = mockRoles.find(r => r.id === id);
-    if (!role) throw new Error('Role not found');
-    return role;
+    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Role not found');
+    return response.json();
   },
   create: async (data: Omit<typeof mockRoles[0], 'id'>) => {
-    await delay(300);
-    return { id: String(Date.now()), ...data };
+    const response = await fetch(`${API_BASE_URL}/rols`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to create role');
+    return response.json();
   },
   update: async (id: string, data: Partial<typeof mockRoles[0]>) => {
-    await delay(300);
-    const role = mockRoles.find(r => r.id === id);
-    if (!role) throw new Error('Role not found');
-    return { ...role, ...data };
+    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) throw new Error('Failed to update role');
+    return response.json();
   },
   delete: async (id: string) => {
-    await delay(300);
+    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to delete role');
     return { success: true };
   },
 };
