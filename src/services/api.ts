@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://digi-beta.dtvc.local:8214/v2';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://digition.ccma.cat/digition-api/v2';
 
 // Get API key from environment
 const getHeaders = () => ({
@@ -29,7 +29,7 @@ const mockRoles = [
 
 export const authApi = {
   login: async (email: string, password: string) => {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    const response = await fetch(`${API_BASE_URL}/autenticacio/login`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({ email, password }),
