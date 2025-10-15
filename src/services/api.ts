@@ -28,11 +28,11 @@ const mockRoles = [
 ];
 
 export const authApi = {
-  login: async (email: string, password: string) => {
+  login: async (login: string, clau: string, digition: string) => {
     const response = await fetch(`${API_BASE_URL}/autenticacio/login`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ login, clau, digition }),
     });
     if (!response.ok) {
       throw new Error('Invalid credentials');

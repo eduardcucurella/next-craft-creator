@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [loginUser, setLoginUser] = useState('');
+  const [clau, setClau] = useState('');
+  const [digition, setDigition] = useState('PRODUCCIO');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -21,7 +23,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(email, password);
+      await login(loginUser, clau, digition);
       toast({
         title: 'Login successful',
         description: 'Welcome back!',
@@ -30,7 +32,7 @@ const Login = () => {
     } catch (error) {
       toast({
         title: 'Login failed',
-        description: 'Invalid credentials. Try admin@example.com / password',
+        description: 'Invalid credentials',
         variant: 'destructive',
       });
     } finally {
@@ -55,13 +57,13 @@ const Login = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="login">Login</Label>
               <Input
-                id="email"
+                id="login"
                 type="text"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your username"
+                value={loginUser}
+                onChange={(e) => setLoginUser(e.target.value)}
                 required
               />
             </div>
@@ -71,17 +73,29 @@ const Login = () => {
                 id="password"
                 type="password"
                 placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                value={clau}
+                onChange={(e) => setClau(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="digition">Digition</Label>
+              <Select value={digition} onValueChange={setDigition}>
+                <SelectTrigger id="digition">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="PRODUCCIO">PRODUCCIÓ</SelectItem>
+                  <SelectItem value="DOCUMENTACIO">DOCUMENTACIÓ</SelectItem>
+                  <SelectItem value="ARXIU">ARXIU</SelectItem>
+                  <SelectItem value="EMISSIO">EMISSIÓ</SelectItem>
+                  <SelectItem value="PARLAMENT">PARLAMENT</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
-            <p className="text-xs text-center text-muted-foreground">
-              Demo: admin@example.com / password
-            </p>
           </form>
         </CardContent>
       </Card>
