@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useToast } from '@/hooks/use-toast';
 import { Lock } from 'lucide-react';
-import { getBrowserInfo, FRONTEND_VERSION } from '@/utils/browser-detection';
 
 const Login = () => {
   const [loginUser, setLoginUser] = useState('');
@@ -24,8 +23,7 @@ const Login = () => {
     setLoading(true);
 
     try {
-      const { clientId, clientVersion } = getBrowserInfo();
-      await login(loginUser, clau, digition, clientId, clientVersion, FRONTEND_VERSION);
+      await login(loginUser, clau, digition);
       toast({
         title: 'Login successful',
         description: 'Welcome back!',
