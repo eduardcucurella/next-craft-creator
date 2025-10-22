@@ -1,4 +1,4 @@
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://digition.ccma.cat/digition-api/v2';
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://tomcat01-test.pub.dtvc.local:8214/v2';
 
 // Get API key from environment
 const getHeaders = () => ({
