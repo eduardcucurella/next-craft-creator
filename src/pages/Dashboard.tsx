@@ -3,10 +3,10 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Users, UserCircle, Shield, UsersRound } from 'lucide-react';
 
 const stats = [
-  { name: 'Total Users', value: '2', icon: Users, color: 'text-blue-600' },
-  { name: 'Profiles', value: '2', icon: UserCircle, color: 'text-green-600' },
-  { name: 'Groups', value: '2', icon: UsersRound, color: 'text-purple-600' },
-  { name: 'Roles', value: '2', icon: Shield, color: 'text-orange-600' },
+  { name: 'Usuaris Totals', value: '2', icon: Users, color: 'text-blue-600' },
+  { name: 'Perfils', value: '2', icon: UserCircle, color: 'text-green-600' },
+  { name: 'Grups', value: '2', icon: UsersRound, color: 'text-purple-600' },
+  { name: 'Rols', value: '2', icon: Shield, color: 'text-orange-600' },
 ];
 
 const Dashboard = () => {
@@ -15,9 +15,9 @@ const Dashboard = () => {
   return (
     <div className="p-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">Welcome back, {user?.name}!</h1>
+        <h1 className="text-3xl font-bold">Benvingut/da de nou, {user?.name}!</h1>
         <p className="text-muted-foreground mt-2">
-          Here's an overview of your system
+          Aquí teniu una visió general del vostre sistema
         </p>
       </div>
 
@@ -38,30 +38,30 @@ const Dashboard = () => {
       <div className="mt-8 grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Common administrative tasks</CardDescription>
+            <CardTitle>Accions Ràpides</CardTitle>
+            <CardDescription>Tasques administratives comunes</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">• Manage users and permissions</p>
-              <p className="text-sm text-muted-foreground">• Configure groups and roles</p>
-              <p className="text-sm text-muted-foreground">• Update user profiles</p>
-              <p className="text-sm text-muted-foreground">• Monitor system activity</p>
+              <p className="text-sm text-muted-foreground">• Gestionar usuaris i permisos</p>
+              <p className="text-sm text-muted-foreground">• Configurar grups i rols</p>
+              <p className="text-sm text-muted-foreground">• Actualitzar perfils d'usuari</p>
+              <p className="text-sm text-muted-foreground">• Monitoritzar l'activitat del sistema</p>
             </div>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader>
-            <CardTitle>System Status</CardTitle>
-            <CardDescription>Current system information</CardDescription>
+            <CardTitle>Estat del Sistema</CardTitle>
+            <CardDescription>Informació actual del sistema</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Status: <span className="text-green-600 font-medium">Online</span></p>
-              <p className="text-sm text-muted-foreground">API: <span className="text-orange-600 font-medium">Mock Mode</span></p>
-              <p className="text-sm text-muted-foreground">Version: 1.0.0</p>
-              <p className="text-sm text-muted-foreground">Last Updated: {new Date().toLocaleDateString()}</p>
+              <p className="text-sm text-muted-foreground">Estat: <span className="text-green-600 font-medium">En línia</span></p>
+              <p className="text-sm text-muted-foreground">API: <span className="text-orange-600 font-medium">Mode simulació</span></p>
+              <p className="text-sm text-muted-foreground">Versió: 1.0.0</p>
+              <p className="text-sm text-muted-foreground">Última actualització: {new Date().toLocaleDateString('ca-ES')}</p>
             </div>
           </CardContent>
         </Card>

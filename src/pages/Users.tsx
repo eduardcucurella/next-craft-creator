@@ -21,8 +21,8 @@ const Users = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] });
       toast({
-        title: 'User deleted',
-        description: 'The user has been successfully deleted.',
+        title: 'Usuari eliminat',
+        description: 'L\'usuari s\'ha eliminat correctament.',
       });
     },
   });
@@ -30,7 +30,7 @@ const Users = () => {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-lg text-muted-foreground">Loading...</div>
+        <div className="text-lg text-muted-foreground">Carregant...</div>
       </div>
     );
   }
@@ -39,27 +39,27 @@ const Users = () => {
     <div className="p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Users</h1>
-          <p className="text-muted-foreground mt-2">Manage system users and their permissions</p>
+          <h1 className="text-3xl font-bold">Usuaris</h1>
+          <p className="text-muted-foreground mt-2">Gestionar els usuaris del sistema i els seus permisos</p>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add User
+          Afegir Usuari
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Users</CardTitle>
+          <CardTitle>Tots els Usuaris</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Role</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Nom</TableHead>
+                <TableHead>Correu electrònic</TableHead>
+                <TableHead>Rol</TableHead>
+                <TableHead className="text-right">Accions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

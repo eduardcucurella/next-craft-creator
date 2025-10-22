@@ -31,13 +31,13 @@ const Index = () => {
             <UsersRound className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <h1 className="mb-4 text-5xl font-bold">Admin Portal</h1>
+        <h1 className="mb-4 text-5xl font-bold">Portal d'Administració</h1>
         <p className="text-xl text-muted-foreground mb-8">
-          Modern user management system with full CRUD capabilities
+          Sistema modern de gestió d'usuaris amb capacitats CRUD completes
         </p>
         <div className="flex gap-4 justify-center">
           <Button size="lg" onClick={() => navigate('/login')}>
-            Get Started
+            Començar
             <ArrowRight className="ml-2 h-4 w-4" />
           </Button>
         </div>

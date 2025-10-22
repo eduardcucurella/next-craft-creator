@@ -25,14 +25,14 @@ const Login = () => {
     try {
       await login(loginUser, clau, digition);
       toast({
-        title: 'Login successful',
-        description: 'Welcome back!',
+        title: 'Inici de sessió correcte',
+        description: 'Benvingut de nou!',
       });
       navigate('/dashboard');
     } catch (error) {
       toast({
-        title: 'Login failed',
-        description: 'Invalid credentials',
+        title: 'Error d\'inici de sessió',
+        description: 'Credencials no vàlides',
         variant: 'destructive',
       });
     } finally {
@@ -49,37 +49,37 @@ const Login = () => {
               <Lock className="h-6 w-6 text-primary-foreground" />
             </div>
           </div>
-          <CardTitle className="text-2xl text-center">Admin Portal</CardTitle>
+          <CardTitle className="text-2xl text-center">Portal d'Administració</CardTitle>
           <CardDescription className="text-center">
-            Enter your credentials to access the dashboard
+            Introduïu les vostres credencials per accedir al tauler
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="login">Login</Label>
+              <Label htmlFor="login">Usuari</Label>
               <Input
                 id="login"
                 type="text"
-                placeholder="Enter your username"
+                placeholder="Introduïu el vostre nom d'usuari"
                 value={loginUser}
                 onChange={(e) => setLoginUser(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Contrasenya</Label>
               <Input
                 id="password"
                 type="password"
-                placeholder="Enter your password"
+                placeholder="Introduïu la vostra contrasenya"
                 value={clau}
                 onChange={(e) => setClau(e.target.value)}
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="digition">Digition</Label>
+              <Label htmlFor="digition">Edició</Label>
               <Select value={digition} onValueChange={setDigition}>
                 <SelectTrigger id="digition">
                   <SelectValue />
@@ -94,7 +94,7 @@ const Login = () => {
               </Select>
             </div>
             <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? 'Iniciant sessió...' : 'Iniciar sessió'}
             </Button>
           </form>
         </CardContent>

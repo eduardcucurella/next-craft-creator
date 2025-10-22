@@ -20,8 +20,8 @@ const Groups = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['groups'] });
       toast({
-        title: 'Group deleted',
-        description: 'The group has been successfully deleted.',
+        title: 'Grup eliminat',
+        description: 'El grup s\'ha eliminat correctament.',
       });
     },
   });
@@ -29,7 +29,7 @@ const Groups = () => {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-lg text-muted-foreground">Loading...</div>
+        <div className="text-lg text-muted-foreground">Carregant...</div>
       </div>
     );
   }
@@ -38,27 +38,27 @@ const Groups = () => {
     <div className="p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Groups</h1>
-          <p className="text-muted-foreground mt-2">Manage user groups and memberships</p>
+          <h1 className="text-3xl font-bold">Grups</h1>
+          <p className="text-muted-foreground mt-2">Gestionar grups d'usuaris i afiliacions</p>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Group
+          Afegir Grup
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Groups</CardTitle>
+          <CardTitle>Tots els Grups</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Members</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Nom</TableHead>
+                <TableHead>Descripció</TableHead>
+                <TableHead>Membres</TableHead>
+                <TableHead className="text-right">Accions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

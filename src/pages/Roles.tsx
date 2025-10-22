@@ -21,8 +21,8 @@ const Roles = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
       toast({
-        title: 'Role deleted',
-        description: 'The role has been successfully deleted.',
+        title: 'Rol eliminat',
+        description: 'El rol s\'ha eliminat correctament.',
       });
     },
   });
@@ -30,7 +30,7 @@ const Roles = () => {
   if (isLoading) {
     return (
       <div className="flex h-full items-center justify-center">
-        <div className="text-lg text-muted-foreground">Loading...</div>
+        <div className="text-lg text-muted-foreground">Carregant...</div>
       </div>
     );
   }
@@ -39,27 +39,27 @@ const Roles = () => {
     <div className="p-8">
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Roles</h1>
-          <p className="text-muted-foreground mt-2">Manage system roles and permissions</p>
+          <h1 className="text-3xl font-bold">Rols</h1>
+          <p className="text-muted-foreground mt-2">Gestionar els rols i permisos del sistema</p>
         </div>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Role
+          Afegir Rol
         </Button>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>All Roles</CardTitle>
+          <CardTitle>Tots els Rols</CardTitle>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Description</TableHead>
-                <TableHead>Permissions</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead>Nom</TableHead>
+                <TableHead>Descripció</TableHead>
+                <TableHead>Permisos</TableHead>
+                <TableHead className="text-right">Accions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

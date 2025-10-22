@@ -5,11 +5,11 @@ import { Users, UserCircle, Shield, UsersRound, LogOut, LayoutDashboard } from '
 import { cn } from '@/lib/utils';
 
 const navigation = [
-  { name: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Users', href: '/dashboard/users', icon: Users },
-  { name: 'Profiles', href: '/dashboard/profiles', icon: UserCircle },
-  { name: 'Groups', href: '/dashboard/groups', icon: UsersRound },
-  { name: 'Roles', href: '/dashboard/roles', icon: Shield },
+  { name: 'Tauler', href: '/dashboard', icon: LayoutDashboard },
+  { name: 'Usuaris', href: '/dashboard/users', icon: Users },
+  { name: 'Perfils', href: '/dashboard/profiles', icon: UserCircle },
+  { name: 'Grups', href: '/dashboard/groups', icon: UsersRound },
+  { name: 'Rols', href: '/dashboard/roles', icon: Shield },
 ];
 
 export const DashboardLayout = () => {
@@ -28,7 +28,7 @@ export const DashboardLayout = () => {
       <aside className="w-64 border-r border-border bg-card">
         <div className="flex h-full flex-col">
           <div className="flex h-16 items-center border-b border-border px-6">
-            <h1 className="text-xl font-bold text-primary">Admin Portal</h1>
+            <h1 className="text-xl font-bold text-primary">Portal d'Administració</h1>
           </div>
           
           <nav className="flex-1 space-y-1 px-3 py-4">
@@ -68,7 +68,7 @@ export const DashboardLayout = () => {
               onClick={handleLogout}
             >
               <LogOut className="mr-2 h-4 w-4" />
-              Logout
+              Tancar sessió
             </Button>
           </div>
         </div>
