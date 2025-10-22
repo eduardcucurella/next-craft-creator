@@ -75,7 +75,6 @@ const Login = () => {
                 placeholder="Introduïu la vostra contrasenya"
                 value={clau}
                 onChange={(e) => setClau(e.target.value)}
-                required
               />
             </div>
             <div className="space-y-2">
