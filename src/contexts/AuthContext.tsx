@@ -34,11 +34,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userData = await authApi.login(login, clau, digition);
     setUser(userData);
     localStorage.setItem('user', JSON.stringify(userData));
+    
+    // Desar l'accessToken si existeix
+    if (userData.accessToken) {
+      localStorage.setItem('accessToken', userData.accessToken);
+    }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('accessToken');
   };
 
   return (

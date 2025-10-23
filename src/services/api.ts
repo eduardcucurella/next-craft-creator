@@ -1,13 +1,19 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://digition.ccma.cat/digition-api/v2';
 
-// Get API key from environment
+// Get API key from environment or stored token
 const getHeaders = (includeAuth = true) => {
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
   
-  if (includeAuth && import.meta.env.VITE_API_KEY) {
-    headers['Authorization'] = `Bearer ${import.meta.env.VITE_API_KEY}`;
+  if (includeAuth) {
+    // Prioritzar el token desat del login
+    const accessToken = localStorage.getItem('accessToken');
+    const token = accessToken || import.meta.env.VITE_API_KEY;
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
   }
   
   return headers;
