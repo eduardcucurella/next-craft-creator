@@ -1,10 +1,17 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://tomcat01-test.pub.dtvc.local:8214/v2';
 
 // Get API key from environment
-const getHeaders = () => ({
-  'Content-Type': 'application/json',
-  'Authorization': `Bearer ${import.meta.env.VITE_API_KEY || ''}`,
-});
+const getHeaders = (includeAuth = true) => {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  
+  if (includeAuth && import.meta.env.VITE_API_KEY) {
+    headers['Authorization'] = `Bearer ${import.meta.env.VITE_API_KEY}`;
+  }
+  
+  return headers;
+};
 
 // Mock data
 const mockUsers = [
@@ -31,7 +38,7 @@ export const authApi = {
   login: async (login: string, clau: string, digition: string) => {
     const response = await fetch(`${API_BASE_URL}/autenticacio/login`, {
       method: 'POST',
-      headers: getHeaders(),
+      headers: getHeaders(false), // No enviem Bearer token al login
       body: JSON.stringify({ login, clau, digition }),
     });
     if (!response.ok) {
