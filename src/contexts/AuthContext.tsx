@@ -32,8 +32,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (login: string, clau: string, digition: string) => {
     const userData = await authApi.login(login, clau, digition);
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    console.log('Login response data:', userData);
+    
+    // Mapejar les dades de l'API a l'estructura esperada
+    const mappedUser: User = {
+      id: userData.id || userData.usuariId || '1',
+      email: userData.email || userData.login || login,
+      role: userData.role || (userData.admin ? 'admin' : 'user'),
+      name: userData.name || userData.nom || userData.nomComplet || login,
+    };
+    
+    console.log('Mapped user data:', mappedUser);
+    
+    setUser(mappedUser);
+    localStorage.setItem('user', JSON.stringify(mappedUser));
     
     // Desar l'accessToken si existeix
     if (userData.accessToken) {
