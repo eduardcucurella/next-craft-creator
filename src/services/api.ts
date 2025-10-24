@@ -68,6 +68,7 @@ export const usersApi = {
     const queryParams = new URLSearchParams({
       page: params.page.toString(),
       pageSize: params.pageSize.toString(),
+      digition: params.digition,
       ...(params.sortBy && { sortBy: params.sortBy }),
       ...(params.sortOrder && { sortOrder: params.sortOrder }),
     });
@@ -79,7 +80,6 @@ export const usersApi = {
         login: params.login || '',
         nom: params.nom || '',
         cognom: params.cognom || '',
-        digition: params.digition,
       }),
     });
     if (!response.ok) throw new Error('Failed to search users');
