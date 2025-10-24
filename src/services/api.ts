@@ -55,6 +55,33 @@ export const authApi = {
 };
 
 export const usersApi = {
+  search: async (params: {
+    login?: string;
+    nom?: string;
+    cognom?: string;
+    page: number;
+    pageSize: number;
+    sortBy?: 'name' | 'description' | 'roleId';
+    sortOrder?: 'asc' | 'desc';
+    digition: string;
+  }) => {
+    const response = await fetch(`${API_BASE_URL}/usuaris/search`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({
+        login: params.login || '',
+        nom: params.nom || '',
+        cognom: params.cognom || '',
+        page: params.page,
+        pageSize: params.pageSize,
+        sortBy: params.sortBy,
+        sortOrder: params.sortOrder,
+        digition: params.digition,
+      }),
+    });
+    if (!response.ok) throw new Error('Failed to search users');
+    return response.json();
+  },
   getAll: async () => {
     const response = await fetch(`${API_BASE_URL}/usuaris`, {
       headers: getHeaders(),

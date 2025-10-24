@@ -1,39 +1,94 @@
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '@/services/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
-import { Plus, Pencil, Trash2 } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 const Users = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const { data: users, isLoading } = useQuery({
-    queryKey: ['users'],
-    queryFn: usersApi.getAll,
+  const [searchParams, setSearchParams] = useState({
+    login: '',
+    nom: '',
+    cognom: '',
+  });
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [sortBy, setSortBy] = useState<'name' | 'description' | 'roleId'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchResults, setSearchResults] = useState<any>(null);
+
+  const searchMutation = useMutation({
+    mutationFn: usersApi.search,
+    onSuccess: (data) => {
+      setSearchResults(data);
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'No s\'han pogut cercar els usuaris.',
+        variant: 'destructive',
+      });
+    },
   });
 
   const deleteMutation = useMutation({
     mutationFn: usersApi.delete,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
       toast({
         title: 'Usuari eliminat',
         description: 'L\'usuari s\'ha eliminat correctament.',
       });
+      handleSearch();
     },
   });
 
-  if (isLoading) {
-    return (
-      <div className="flex h-full items-center justify-center">
-        <div className="text-lg text-muted-foreground">Carregant...</div>
-      </div>
-    );
-  }
+  const handleSearch = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    
+    searchMutation.mutate({
+      ...searchParams,
+      page,
+      pageSize,
+      sortBy,
+      sortOrder,
+      digition: user.digition,
+    });
+  };
+
+  const handlePageChange = (newPage: number) => {
+    setPage(newPage);
+    const userData = localStorage.getItem('user');
+    if (userData) {
+      const user = JSON.parse(userData);
+      searchMutation.mutate({
+        ...searchParams,
+        page: newPage,
+        pageSize,
+        sortBy,
+        sortOrder,
+        digition: user.digition,
+      });
+    }
+  };
 
   return (
     <div className="p-8">
@@ -48,50 +103,169 @@ const Users = () => {
         </Button>
       </div>
 
-      <Card>
+      <Card className="mb-6">
         <CardHeader>
-          <CardTitle>Tots els Usuaris</CardTitle>
+          <CardTitle>Cercar Usuaris</CardTitle>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Correu electrònic</TableHead>
-                <TableHead>Rol</TableHead>
-                <TableHead className="text-right">Accions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {users?.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-2">
-                      <Button variant="ghost" size="icon">
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => deleteMutation.mutate(user.id)}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div className="space-y-2">
+              <Label htmlFor="login">Login</Label>
+              <Input
+                id="login"
+                value={searchParams.login}
+                onChange={(e) => setSearchParams({ ...searchParams, login: e.target.value })}
+                placeholder="Cerca per login..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="nom">Nom</Label>
+              <Input
+                id="nom"
+                value={searchParams.nom}
+                onChange={(e) => setSearchParams({ ...searchParams, nom: e.target.value })}
+                placeholder="Cerca per nom..."
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="cognom">Cognom</Label>
+              <Input
+                id="cognom"
+                value={searchParams.cognom}
+                onChange={(e) => setSearchParams({ ...searchParams, cognom: e.target.value })}
+                placeholder="Cerca per cognom..."
+              />
+            </div>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+            <div className="space-y-2">
+              <Label htmlFor="sortBy">Ordenar per</Label>
+              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
+                <SelectTrigger id="sortBy">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="name">Nom</SelectItem>
+                  <SelectItem value="description">Descripció</SelectItem>
+                  <SelectItem value="roleId">Rol</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="sortOrder">Ordre</Label>
+              <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
+                <SelectTrigger id="sortOrder">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="asc">Ascendent</SelectItem>
+                  <SelectItem value="desc">Descendent</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="pageSize">Elements per pàgina</Label>
+              <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+                <SelectTrigger id="pageSize">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <Button onClick={handleSearch} disabled={searchMutation.isPending}>
+            <Search className="mr-2 h-4 w-4" />
+            {searchMutation.isPending ? 'Cercant...' : 'Cercar'}
+          </Button>
         </CardContent>
       </Card>
+
+      {searchResults && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Resultats de la Cerca</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nom</TableHead>
+                  <TableHead>Correu electrònic</TableHead>
+                  <TableHead>Rol</TableHead>
+                  <TableHead className="text-right">Accions</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {searchResults.items?.length > 0 ? (
+                  searchResults.items.map((user: any) => (
+                    <TableRow key={user.id}>
+                      <TableCell className="font-medium">{user.name}</TableCell>
+                      <TableCell>{user.email}</TableCell>
+                      <TableCell>
+                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
+                          {user.role}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex justify-end gap-2">
+                          <Button variant="ghost" size="icon">
+                            <Pencil className="h-4 w-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => deleteMutation.mutate(user.id)}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={4} className="text-center text-muted-foreground">
+                      No s'han trobat usuaris amb els criteris de cerca especificats.
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            {searchResults.items?.length > 0 && (
+              <div className="flex items-center justify-between mt-4">
+                <div className="text-sm text-muted-foreground">
+                  Pàgina {page} de {searchResults.totalPages || 1} ({searchResults.totalItems || 0} usuaris en total)
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(page - 1)}
+                    disabled={page === 1}
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    Anterior
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePageChange(page + 1)}
+                    disabled={page >= (searchResults.totalPages || 1)}
+                  >
+                    Següent
+                    <ChevronRight className="h-4 w-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 };
