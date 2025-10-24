@@ -50,8 +50,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const userData = await authApi.login(login, clau, digition);
     console.log('Login response data:', userData);
     
+    // Assegurar-nos que el token està net
+    const cleanToken = userData.accessToken.trim();
+    console.log('Clean token length:', cleanToken.length);
+    console.log('Token preview:', cleanToken.substring(0, 50) + '...');
+    
     // Descodificar el JWT per obtenir les dades de l'usuari
-    const decoded = jwtDecode<JwtPayload>(userData.accessToken);
+    const decoded = jwtDecode<JwtPayload>(cleanToken);
     console.log('Decoded JWT:', decoded);
     
     // Mapejar les dades del JWT a l'estructura esperada
@@ -70,8 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(mappedUser);
     localStorage.setItem('user', JSON.stringify(mappedUser));
     
-    // Desar l'accessToken
-    localStorage.setItem('accessToken', userData.accessToken);
+    // Desar l'accessToken net
+    localStorage.setItem('accessToken', cleanToken);
   };
 
   const logout = () => {

@@ -12,7 +12,10 @@ const getHeaders = (includeAuth = true) => {
     const token = accessToken || import.meta.env.VITE_API_KEY;
     
     if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
+      // Netejar el token d'espais en blanc i caràcters estranys
+      const cleanToken = token.trim();
+      headers['Authorization'] = `Bearer ${cleanToken}`;
+      console.log('Sending Authorization header:', headers['Authorization'].substring(0, 50) + '...');
     }
   }
   
