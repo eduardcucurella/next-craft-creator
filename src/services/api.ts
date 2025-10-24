@@ -76,16 +76,27 @@ export const usersApi = {
       ...(params.sortOrder && { sortOrder: params.sortOrder }),
     });
 
+    // Només enviar els camps que tenen valor al body
+    const body: any = {};
+    if (params.login && params.login.trim()) body.login = params.login.trim();
+    if (params.nom && params.nom.trim()) body.nom = params.nom.trim();
+    if (params.cognom && params.cognom.trim()) body.cognom = params.cognom.trim();
+
+    console.log('Search request body:', body);
+    console.log('Search request URL:', `${API_BASE_URL}/usuaris/search?${queryParams}`);
+
     const response = await fetch(`${API_BASE_URL}/usuaris/search?${queryParams}`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({
-        login: params.login || '',
-        nom: params.nom || '',
-        cognom: params.cognom || '',
-      }),
+      body: JSON.stringify(body),
     });
-    if (!response.ok) throw new Error('Failed to search users');
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Search error response:', errorText);
+      throw new Error('Failed to search users');
+    }
+    
     return response.json();
   },
   getAll: async () => {
