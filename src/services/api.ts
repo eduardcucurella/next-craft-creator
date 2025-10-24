@@ -65,17 +65,20 @@ export const usersApi = {
     sortOrder?: 'asc' | 'desc';
     digition: string;
   }) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/search`, {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+      ...(params.sortBy && { sortBy: params.sortBy }),
+      ...(params.sortOrder && { sortOrder: params.sortOrder }),
+    });
+
+    const response = await fetch(`${API_BASE_URL}/usuaris/search?${queryParams}`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify({
         login: params.login || '',
         nom: params.nom || '',
         cognom: params.cognom || '',
-        page: params.page,
-        pageSize: params.pageSize,
-        sortBy: params.sortBy,
-        sortOrder: params.sortOrder,
         digition: params.digition,
       }),
     });
