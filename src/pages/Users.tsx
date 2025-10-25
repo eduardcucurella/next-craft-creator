@@ -24,12 +24,13 @@ const Users = () => {
   const [pageSize, setPageSize] = useState(10);
   const [sortBy, setSortBy] = useState<'name' | 'description' | 'roleId'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const [searchResults, setSearchResults] = useState<any>(null);
+  const [searchResults, setSearchResults] = useState<any[]>([]);
 
   const searchMutation = useMutation({
     mutationFn: usersApi.search,
     onSuccess: (data) => {
-      setSearchResults(data);
+      // L'API retorna directament un array d'usuaris
+      setSearchResults(Array.isArray(data) ? data : []);
     },
     onError: () => {
       toast({
@@ -185,84 +186,58 @@ const Users = () => {
         </CardContent>
       </Card>
 
-      {searchResults && (
+      {searchResults.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Resultats de la Cerca</CardTitle>
+            <CardTitle>Resultats de la Cerca ({searchResults.length} usuaris)</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Login</TableHead>
                   <TableHead>Nom</TableHead>
+                  <TableHead>Cognoms</TableHead>
                   <TableHead>Correu electrònic</TableHead>
-                  <TableHead>Rol</TableHead>
+                  <TableHead>Grup Principal</TableHead>
                   <TableHead className="text-right">Accions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {searchResults.items?.length > 0 ? (
-                  searchResults.items.map((user: any) => (
-                    <TableRow key={user.id}>
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Badge variant={user.role === 'admin' ? 'default' : 'secondary'}>
-                          {user.role}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                          <Button variant="ghost" size="icon">
-                            <Pencil className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            onClick={() => deleteMutation.mutate(user.id)}
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={4} className="text-center text-muted-foreground">
-                      No s'han trobat usuaris amb els criteris de cerca especificats.
+                {searchResults.map((user: any) => (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">{user.login}</TableCell>
+                    <TableCell>{user.nom}</TableCell>
+                    <TableCell>{user.cognoms}</TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge variant="secondary">
+                        {user.primaryGroupId}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <div className="flex justify-end gap-2">
+                        <Button variant="ghost" size="icon">
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => deleteMutation.mutate(user.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
-                )}
+                ))}
               </TableBody>
             </Table>
-            {searchResults.items?.length > 0 && (
-              <div className="flex items-center justify-between mt-4">
-                <div className="text-sm text-muted-foreground">
-                  Pàgina {page} de {searchResults.totalPages || 1} ({searchResults.totalItems || 0} usuaris en total)
-                </div>
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(page - 1)}
-                    disabled={page === 1}
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    Anterior
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handlePageChange(page + 1)}
-                    disabled={page >= (searchResults.totalPages || 1)}
-                  >
-                    Següent
-                    <ChevronRight className="h-4 w-4 ml-1" />
-                  </Button>
-                </div>
+            <div className="flex items-center justify-between mt-4">
+              <div className="text-sm text-muted-foreground">
+                Mostrant {searchResults.length} resultats
               </div>
-            )}
+            </div>
           </CardContent>
         </Card>
       )}
