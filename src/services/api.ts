@@ -35,8 +35,8 @@ const getHeaders = (includeAuth = true) => {
         console.error('Error checking token expiration:', e);
       }
       
-      headers['Authorization'] = `Bearer ${cleanToken}`;
-      console.log('Sending Authorization header:', headers['Authorization'].substring(0, 50) + '...');
+      headers['Authorization'] = cleanToken; // Sense prefix Bearer
+      console.log('Sending Authorization header (first 50 chars):', cleanToken.substring(0, 50) + '...');
       console.log('Full token length:', cleanToken.length);
     } else {
       console.warn('No token available for authentication');
