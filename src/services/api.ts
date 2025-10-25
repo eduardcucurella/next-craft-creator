@@ -14,8 +14,32 @@ const getHeaders = (includeAuth = true) => {
     if (token) {
       // Netejar el token d'espais en blanc i caràcters estranys
       const cleanToken = token.trim();
+      
+      // Verificar si el token ha expirat
+      try {
+        const payload = JSON.parse(atob(cleanToken.split('.')[1]));
+        const exp = payload.exp;
+        const now = Math.floor(Date.now() / 1000);
+        
+        if (exp && exp < now) {
+          console.error('Token has expired!', { exp, now, diff: now - exp });
+          // Netejar token expirat
+          localStorage.removeItem('accessToken');
+          localStorage.removeItem('user');
+          window.location.href = '/login';
+          return headers;
+        }
+        
+        console.log('Token is valid. Expires at:', new Date(exp * 1000).toISOString());
+      } catch (e) {
+        console.error('Error checking token expiration:', e);
+      }
+      
       headers['Authorization'] = `Bearer ${cleanToken}`;
       console.log('Sending Authorization header:', headers['Authorization'].substring(0, 50) + '...');
+      console.log('Full token length:', cleanToken.length);
+    } else {
+      console.warn('No token available for authentication');
     }
   }
   
