@@ -7,9 +7,10 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Pencil, Trash2, Search, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 
 const Users = () => {
   const { toast } = useToast();
@@ -235,8 +236,27 @@ const Users = () => {
             </Table>
             <div className="flex items-center justify-between mt-4">
               <div className="text-sm text-muted-foreground">
-                Mostrant {searchResults.length} resultats
+                Mostrant {searchResults.length} resultats - Pàgina {page}
               </div>
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious 
+                      onClick={() => page > 1 && handlePageChange(page - 1)}
+                      className={page === 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationLink isActive>{page}</PaginationLink>
+                  </PaginationItem>
+                  <PaginationItem>
+                    <PaginationNext 
+                      onClick={() => searchResults.length === pageSize && handlePageChange(page + 1)}
+                      className={searchResults.length < pageSize ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
             </div>
           </CardContent>
         </Card>
