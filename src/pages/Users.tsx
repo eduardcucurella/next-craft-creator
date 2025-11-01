@@ -134,7 +134,22 @@ const Users = () => {
   };
 
   const handleCreateUser = () => {
-    createMutation.mutate(newUser);
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    
+    createMutation.mutate({
+      ...newUser,
+      digition: user.digition,
+    });
   };
 
   return (

@@ -145,11 +145,18 @@ export const usersApi = {
     primaryGroupId: number;
     active: boolean;
     notes: string;
+    digition: string;
   }) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris`, {
+    const queryParams = new URLSearchParams({
+      digition: data.digition,
+    });
+    
+    const { digition, ...bodyData } = data;
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris?${queryParams}`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify(data),
+      body: JSON.stringify(bodyData),
     });
     if (!response.ok) throw new Error('Failed to create user');
     return response.json();

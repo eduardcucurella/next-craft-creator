@@ -24,6 +24,7 @@ describe('API Services', () => {
         primaryGroupId: 1,
         active: true,
         notes: 'Test user',
+        digition: '100',
       });
       expect(newUser).toHaveProperty('id');
     });
