@@ -17,10 +17,13 @@ describe('API Services', () => {
 
     it('creates new user', async () => {
       const newUser = await usersApi.create({
+        login: 'newuser',
+        nom: 'New',
+        cognoms: 'User',
         email: 'new@example.com',
-        name: 'New User',
-        role: 'user',
-        profileId: '1',
+        primaryGroupId: 1,
+        active: true,
+        notes: 'Test user',
       });
       expect(newUser).toHaveProperty('id');
     });

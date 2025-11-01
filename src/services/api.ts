@@ -137,7 +137,15 @@ export const usersApi = {
     if (!response.ok) throw new Error('User not found');
     return response.json();
   },
-  create: async (data: Omit<typeof mockUsers[0], 'id'>) => {
+  create: async (data: {
+    login: string;
+    nom: string;
+    cognoms: string;
+    email: string;
+    primaryGroupId: number;
+    active: boolean;
+    notes: string;
+  }) => {
     const response = await fetch(`${API_BASE_URL}/usuaris`, {
       method: 'POST',
       headers: getHeaders(),

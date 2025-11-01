@@ -11,6 +11,9 @@ import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
+import { Switch } from '@/components/ui/switch';
 
 const Users = () => {
   const { toast } = useToast();
@@ -26,6 +29,16 @@ const Users = () => {
   const [sortBy, setSortBy] = useState<'name' | 'description' | 'roleId'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
+  const [newUser, setNewUser] = useState({
+    login: '',
+    nom: '',
+    cognoms: '',
+    email: '',
+    primaryGroupId: 0,
+    active: true,
+    notes: '',
+  });
 
   const searchMutation = useMutation({
     mutationFn: usersApi.search,
@@ -37,6 +50,34 @@ const Users = () => {
       toast({
         title: 'Error',
         description: 'No s\'han pogut cercar els usuaris.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const createMutation = useMutation({
+    mutationFn: usersApi.create,
+    onSuccess: () => {
+      toast({
+        title: 'Usuari creat',
+        description: 'L\'usuari s\'ha creat correctament.',
+      });
+      setIsCreateDialogOpen(false);
+      setNewUser({
+        login: '',
+        nom: '',
+        cognoms: '',
+        email: '',
+        primaryGroupId: 0,
+        active: true,
+        notes: '',
+      });
+      handleSearch();
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut crear l\'usuari.',
         variant: 'destructive',
       });
     },
@@ -92,6 +133,10 @@ const Users = () => {
     }
   };
 
+  const handleCreateUser = () => {
+    createMutation.mutate(newUser);
+  };
+
   return (
     <div className="p-8">
       <div className="mb-6 flex items-center justify-between">
@@ -99,10 +144,107 @@ const Users = () => {
           <h1 className="text-3xl font-bold">Usuaris</h1>
           <p className="text-muted-foreground mt-2">Gestionar els usuaris del sistema i els seus permisos</p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Afegir Usuari
-        </Button>
+        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
+              Afegir Usuari
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Crear Nou Usuari</DialogTitle>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-login">Login *</Label>
+                  <Input
+                    id="new-login"
+                    value={newUser.login}
+                    onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
+                    placeholder="Introdueix el login..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-email">Email *</Label>
+                  <Input
+                    id="new-email"
+                    type="email"
+                    value={newUser.email}
+                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    placeholder="usuari@example.com"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-nom">Nom *</Label>
+                  <Input
+                    id="new-nom"
+                    value={newUser.nom}
+                    onChange={(e) => setNewUser({ ...newUser, nom: e.target.value })}
+                    placeholder="Introdueix el nom..."
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-cognoms">Cognoms *</Label>
+                  <Input
+                    id="new-cognoms"
+                    value={newUser.cognoms}
+                    onChange={(e) => setNewUser({ ...newUser, cognoms: e.target.value })}
+                    placeholder="Introdueix els cognoms..."
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="new-primaryGroupId">Grup Principal ID *</Label>
+                  <Input
+                    id="new-primaryGroupId"
+                    type="number"
+                    value={newUser.primaryGroupId}
+                    onChange={(e) => setNewUser({ ...newUser, primaryGroupId: Number(e.target.value) })}
+                    placeholder="0"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-active" className="flex items-center gap-2">
+                    Actiu
+                  </Label>
+                  <div className="flex items-center space-x-2 pt-2">
+                    <Switch
+                      id="new-active"
+                      checked={newUser.active}
+                      onCheckedChange={(checked) => setNewUser({ ...newUser, active: checked })}
+                    />
+                    <Label htmlFor="new-active" className="text-sm text-muted-foreground">
+                      {newUser.active ? 'Sí' : 'No'}
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="new-notes">Notes</Label>
+                <Textarea
+                  id="new-notes"
+                  value={newUser.notes}
+                  onChange={(e) => setNewUser({ ...newUser, notes: e.target.value })}
+                  placeholder="Introdueix notes opcionals..."
+                  rows={4}
+                />
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+                Cancel·lar
+              </Button>
+              <Button onClick={handleCreateUser} disabled={createMutation.isPending}>
+                {createMutation.isPending ? 'Creant...' : 'Crear'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <Card className="mb-6">
