@@ -29,8 +29,10 @@ const Users = () => {
   const [sortBy, setSortBy] = useState<'name' | 'description' | 'roleId'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchResults, setSearchResults] = useState<any[]>([]);
-  const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [newUser, setNewUser] = useState({
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [userForm, setUserForm] = useState({
     login: '',
     nom: '',
     cognoms: '',
@@ -62,16 +64,7 @@ const Users = () => {
         title: 'Usuari creat',
         description: 'L\'usuari s\'ha creat correctament.',
       });
-      setIsCreateDialogOpen(false);
-      setNewUser({
-        login: '',
-        nom: '',
-        cognoms: '',
-        email: '',
-        primaryGroupId: 0,
-        active: true,
-        notes: '',
-      });
+      handleCloseDialog();
       handleSearch();
     },
     onError: (error: Error) => {
@@ -133,7 +126,51 @@ const Users = () => {
     }
   };
 
-  const handleCreateUser = () => {
+  const handleCloseDialog = () => {
+    setIsDialogOpen(false);
+    setIsEditMode(false);
+    setEditingUserId(null);
+    setUserForm({
+      login: '',
+      nom: '',
+      cognoms: '',
+      email: '',
+      primaryGroupId: 0,
+      active: true,
+      notes: '',
+    });
+  };
+
+  const handleOpenCreateDialog = () => {
+    setIsEditMode(false);
+    setUserForm({
+      login: '',
+      nom: '',
+      cognoms: '',
+      email: '',
+      primaryGroupId: 0,
+      active: true,
+      notes: '',
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleOpenEditDialog = (user: any) => {
+    setIsEditMode(true);
+    setEditingUserId(user.id);
+    setUserForm({
+      login: user.login,
+      nom: user.nom,
+      cognoms: user.cognoms,
+      email: user.email,
+      primaryGroupId: user.primaryGroupId,
+      active: user.active,
+      notes: user.notes || '',
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSaveUser = () => {
     const userData = localStorage.getItem('user');
     if (!userData) {
       toast({
@@ -147,7 +184,7 @@ const Users = () => {
     const user = JSON.parse(userData);
     
     createMutation.mutate({
-      ...newUser,
+      ...userForm,
       digition: user.digition,
     });
   };
@@ -159,16 +196,16 @@ const Users = () => {
           <h1 className="text-3xl font-bold">Usuaris</h1>
           <p className="text-muted-foreground mt-2">Gestionar els usuaris del sistema i els seus permisos</p>
         </div>
-        <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button>
+            <Button onClick={handleOpenCreateDialog}>
               <Plus className="mr-2 h-4 w-4" />
               Afegir Usuari
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Crear Nou Usuari</DialogTitle>
+              <DialogTitle>{isEditMode ? 'Editar Usuari' : 'Crear Nou Usuari'}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="grid grid-cols-2 gap-4">
@@ -176,8 +213,8 @@ const Users = () => {
                   <Label htmlFor="new-login">Login *</Label>
                   <Input
                     id="new-login"
-                    value={newUser.login}
-                    onChange={(e) => setNewUser({ ...newUser, login: e.target.value })}
+                    value={userForm.login}
+                    onChange={(e) => setUserForm({ ...userForm, login: e.target.value })}
                     placeholder="Introdueix el login..."
                   />
                 </div>
@@ -186,8 +223,8 @@ const Users = () => {
                   <Input
                     id="new-email"
                     type="email"
-                    value={newUser.email}
-                    onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                    value={userForm.email}
+                    onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                     placeholder="usuari@example.com"
                   />
                 </div>
@@ -197,8 +234,8 @@ const Users = () => {
                   <Label htmlFor="new-nom">Nom *</Label>
                   <Input
                     id="new-nom"
-                    value={newUser.nom}
-                    onChange={(e) => setNewUser({ ...newUser, nom: e.target.value })}
+                    value={userForm.nom}
+                    onChange={(e) => setUserForm({ ...userForm, nom: e.target.value })}
                     placeholder="Introdueix el nom..."
                   />
                 </div>
@@ -206,8 +243,8 @@ const Users = () => {
                   <Label htmlFor="new-cognoms">Cognoms *</Label>
                   <Input
                     id="new-cognoms"
-                    value={newUser.cognoms}
-                    onChange={(e) => setNewUser({ ...newUser, cognoms: e.target.value })}
+                    value={userForm.cognoms}
+                    onChange={(e) => setUserForm({ ...userForm, cognoms: e.target.value })}
                     placeholder="Introdueix els cognoms..."
                   />
                 </div>
@@ -218,8 +255,8 @@ const Users = () => {
                   <Input
                     id="new-primaryGroupId"
                     type="number"
-                    value={newUser.primaryGroupId}
-                    onChange={(e) => setNewUser({ ...newUser, primaryGroupId: Number(e.target.value) })}
+                    value={userForm.primaryGroupId}
+                    onChange={(e) => setUserForm({ ...userForm, primaryGroupId: Number(e.target.value) })}
                     placeholder="0"
                   />
                 </div>
@@ -230,11 +267,11 @@ const Users = () => {
                   <div className="flex items-center space-x-2 pt-2">
                     <Switch
                       id="new-active"
-                      checked={newUser.active}
-                      onCheckedChange={(checked) => setNewUser({ ...newUser, active: checked })}
+                      checked={userForm.active}
+                      onCheckedChange={(checked) => setUserForm({ ...userForm, active: checked })}
                     />
                     <Label htmlFor="new-active" className="text-sm text-muted-foreground">
-                      {newUser.active ? 'Sí' : 'No'}
+                      {userForm.active ? 'Sí' : 'No'}
                     </Label>
                   </div>
                 </div>
@@ -243,19 +280,19 @@ const Users = () => {
                 <Label htmlFor="new-notes">Notes</Label>
                 <Textarea
                   id="new-notes"
-                  value={newUser.notes}
-                  onChange={(e) => setNewUser({ ...newUser, notes: e.target.value })}
+                  value={userForm.notes}
+                  onChange={(e) => setUserForm({ ...userForm, notes: e.target.value })}
                   placeholder="Introdueix notes opcionals..."
                   rows={4}
                 />
               </div>
             </div>
             <div className="flex justify-end gap-2">
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+              <Button variant="outline" onClick={handleCloseDialog}>
                 Cancel·lar
               </Button>
-              <Button onClick={handleCreateUser} disabled={createMutation.isPending}>
-                {createMutation.isPending ? 'Creant...' : 'Crear'}
+              <Button onClick={handleSaveUser} disabled={createMutation.isPending}>
+                {createMutation.isPending ? (isEditMode ? 'Guardant...' : 'Creant...') : (isEditMode ? 'Guardar' : 'Crear')}
               </Button>
             </div>
           </DialogContent>
@@ -375,7 +412,11 @@ const Users = () => {
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon">
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => handleOpenEditDialog(user)}
+                        >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
