@@ -158,7 +158,10 @@ export const usersApi = {
       headers: getHeaders(),
       body: JSON.stringify(bodyData),
     });
-    if (!response.ok) throw new Error('Failed to create user');
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.missatge || 'Failed to create user');
+    }
     return response.json();
   },
   update: async (id: string, data: Partial<typeof mockUsers[0]>) => {

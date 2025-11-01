@@ -74,10 +74,10 @@ const Users = () => {
       });
       handleSearch();
     },
-    onError: () => {
+    onError: (error: Error) => {
       toast({
         title: 'Error',
-        description: 'No s\'ha pogut crear l\'usuari.',
+        description: error.message || 'No s\'ha pogut crear l\'usuari.',
         variant: 'destructive',
       });
     },
