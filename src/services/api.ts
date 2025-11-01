@@ -160,7 +160,9 @@ export const usersApi = {
     });
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.missatge || 'Failed to create user');
+      const errorMessage = errorData.missatge || 'Failed to create user';
+      const debugInfo = errorData.debugInfo ? ` (${errorData.debugInfo})` : '';
+      throw new Error(`${errorMessage}${debugInfo}`);
     }
     return response.json();
   },
