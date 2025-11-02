@@ -281,7 +281,7 @@ export const rolesApi = {
     if (params.name && params.name.trim()) body.name = params.name.trim();
 
     const response = await fetch(`${API_BASE_URL}/rols/search?${queryParams}`, {
-      method: 'POST',
+      method: 'GET',
       headers: getHeaders(),
       body: JSON.stringify(body),
     });
