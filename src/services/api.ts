@@ -166,16 +166,36 @@ export const usersApi = {
     }
     return response.json();
   },
-  update: async (id: string, data: Partial<typeof mockUsers[0]>) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+  update: async (userId: number, data: {
+    login: string;
+    nom: string;
+    cognoms: string;
+    email: string;
+    primaryGroupId: number;
+    active: boolean;
+    notes: string;
+    digition: string;
+  }) => {
+    const queryParams = new URLSearchParams({
+      digition: data.digition,
+    });
+    
+    const { digition, ...bodyData } = data;
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}?${queryParams}`, {
       method: 'PUT',
       headers: getHeaders(),
-      body: JSON.stringify(data),
+      body: JSON.stringify(bodyData),
     });
-    if (!response.ok) throw new Error('Failed to update user');
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage = errorData.missatge || 'Failed to update user';
+      const debugInfo = errorData.debugInfo ? ` (${errorData.debugInfo})` : '';
+      throw new Error(`${errorMessage}${debugInfo}`);
+    }
     return response.json();
   },
-  delete: async (id: string) => {
+  delete: async (id: number) => {
     const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
       method: 'DELETE',
       headers: getHeaders(),

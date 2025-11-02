@@ -76,6 +76,26 @@ const Users = () => {
     },
   });
 
+  const updateMutation = useMutation({
+    mutationFn: ({ userId, data }: { userId: number; data: any }) => 
+      usersApi.update(userId, data),
+    onSuccess: () => {
+      toast({
+        title: 'Usuari actualitzat',
+        description: 'L\'usuari s\'ha actualitzat correctament.',
+      });
+      handleCloseDialog();
+      handleSearch();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut actualitzar l\'usuari.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: usersApi.delete,
     onSuccess: () => {
@@ -183,10 +203,20 @@ const Users = () => {
     
     const user = JSON.parse(userData);
     
-    createMutation.mutate({
-      ...userForm,
-      digition: user.digition,
-    });
+    if (isEditMode && editingUserId !== null) {
+      updateMutation.mutate({
+        userId: editingUserId,
+        data: {
+          ...userForm,
+          digition: user.digition,
+        },
+      });
+    } else {
+      createMutation.mutate({
+        ...userForm,
+        digition: user.digition,
+      });
+    }
   };
 
   return (
@@ -216,6 +246,7 @@ const Users = () => {
                     value={userForm.login}
                     onChange={(e) => setUserForm({ ...userForm, login: e.target.value })}
                     placeholder="Introdueix el login..."
+                    disabled={isEditMode}
                   />
                 </div>
                 <div className="space-y-2">
@@ -291,8 +322,14 @@ const Users = () => {
               <Button variant="outline" onClick={handleCloseDialog}>
                 Cancel·lar
               </Button>
-              <Button onClick={handleSaveUser} disabled={createMutation.isPending}>
-                {createMutation.isPending ? (isEditMode ? 'Guardant...' : 'Creant...') : (isEditMode ? 'Guardar' : 'Crear')}
+              <Button 
+                onClick={handleSaveUser} 
+                disabled={isEditMode ? updateMutation.isPending : createMutation.isPending}
+              >
+                {isEditMode 
+                  ? (updateMutation.isPending ? 'Guardant...' : 'Guardar')
+                  : (createMutation.isPending ? 'Creant...' : 'Crear')
+                }
               </Button>
             </div>
           </DialogContent>
