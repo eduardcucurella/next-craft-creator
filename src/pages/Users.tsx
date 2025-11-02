@@ -100,7 +100,8 @@ const Users = () => {
   });
 
   const deleteMutation = useMutation({
-    mutationFn: usersApi.delete,
+    mutationFn: ({ id, digition }: { id: number; digition: string }) => 
+      usersApi.delete(id, digition),
     onSuccess: () => {
       toast({
         title: 'Usuari eliminat',
@@ -237,8 +238,20 @@ const Users = () => {
   };
 
   const handleConfirmDelete = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const user = JSON.parse(userData);
+    
     if (userToDelete) {
-      deleteMutation.mutate(userToDelete.id);
+      deleteMutation.mutate({ id: userToDelete.id, digition: user.digition });
     }
   };
 

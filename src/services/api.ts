@@ -195,12 +195,21 @@ export const usersApi = {
     }
     return response.json();
   },
-  delete: async (id: number) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+  delete: async (id: number, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition,
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${id}?${queryParams}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to delete user');
+    if (!response.ok) {
+      const errorData = await response.json();
+      const errorMessage = errorData.missatge || 'Failed to delete user';
+      const debugInfo = errorData.debugInfo ? ` (${errorData.debugInfo})` : '';
+      throw new Error(`${errorMessage}${debugInfo}`);
+    }
     return { success: true };
   },
 };
