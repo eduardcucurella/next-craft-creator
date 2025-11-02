@@ -259,6 +259,41 @@ export const groupsApi = {
 };
 
 export const rolesApi = {
+  search: async (params: {
+    roleid?: number;
+    name?: string;
+    page: number;
+    pageSize: number;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+    digition: string;
+  }) => {
+    const queryParams = new URLSearchParams({
+      page: params.page.toString(),
+      pageSize: params.pageSize.toString(),
+      digition: params.digition,
+      ...(params.sortBy && { sortBy: params.sortBy }),
+      ...(params.sortOrder && { sortOrder: params.sortOrder }),
+    });
+
+    const body: any = {};
+    if (params.roleid !== undefined && params.roleid !== null) body.roleid = params.roleid;
+    if (params.name && params.name.trim()) body.name = params.name.trim();
+
+    const response = await fetch(`${API_BASE_URL}/rols/search?${queryParams}`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(body),
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Search error response:', errorText);
+      throw new Error('Failed to search roles');
+    }
+    
+    return response.json();
+  },
   getAll: async () => {
     const response = await fetch(`${API_BASE_URL}/rols`, {
       headers: getHeaders(),
