@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 
@@ -32,6 +33,8 @@ const Users = () => {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<{ id: number; login: string } | null>(null);
   const [userForm, setUserForm] = useState({
     login: '',
     nom: '',
@@ -103,7 +106,16 @@ const Users = () => {
         title: 'Usuari eliminat',
         description: 'L\'usuari s\'ha eliminat correctament.',
       });
+      setDeleteDialogOpen(false);
+      setUserToDelete(null);
       handleSearch();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut eliminar l\'usuari.',
+        variant: 'destructive',
+      });
     },
   });
 
@@ -216,6 +228,17 @@ const Users = () => {
         ...userForm,
         digition: user.digition,
       });
+    }
+  };
+
+  const handleDeleteClick = (user: any) => {
+    setUserToDelete({ id: user.id, login: user.login });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (userToDelete) {
+      deleteMutation.mutate(userToDelete.id);
     }
   };
 
@@ -459,7 +482,7 @@ const Users = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deleteMutation.mutate(user.id)}
+                          onClick={() => handleDeleteClick(user)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -496,6 +519,28 @@ const Users = () => {
           </CardContent>
         </Card>
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Confirmar eliminació</AlertDialogTitle>
+            <AlertDialogDescription>
+              Estàs segur que vols eliminar l'usuari <strong>{userToDelete?.login}</strong>? 
+              Aquesta acció no es pot desfer.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setUserToDelete(null)}>Cancel·lar</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleConfirmDelete}
+              disabled={deleteMutation.isPending}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Eliminant...' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
