@@ -188,30 +188,16 @@ const Roles = () => {
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>ID</TableHead>
                   <TableHead>Nom</TableHead>
                   <TableHead>Descripció</TableHead>
-                  <TableHead>Permisos</TableHead>
                   <TableHead className="text-right">Accions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {searchResults.map((role) => (
                   <TableRow key={role.id}>
-                    <TableCell>
-                      <Badge variant="secondary">{role.id}</Badge>
-                    </TableCell>
-                    <TableCell className="font-medium capitalize">{role.name}</TableCell>
-                    <TableCell>{role.description}</TableCell>
-                    <TableCell>
-                      <div className="flex flex-wrap gap-1">
-                        {role.permissions?.map((permission: string) => (
-                          <Badge key={permission} variant="outline">
-                            {permission}
-                          </Badge>
-                        ))}
-                      </div>
-                    </TableCell>
+                    <TableCell className="font-medium">{role.nom}</TableCell>
+                    <TableCell>{role.descripcio}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
                         <Button variant="ghost" size="icon">
