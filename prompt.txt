@@ -1,0 +1,70 @@
+Vull una aplicació de frontend feta amb Next.js que pugui fer algunes accions CRUD connectat a una API que ja hem implementat.
+
+Aquesta aplicació de frontend ha de gestionar usuaris i rols.
+
+Crea una aplicació moderna i neta.
+
+Tots els textos visibles de la aplicació web han de ser en català.
+
+Hi ha d'haver tests unitaris.
+
+La API està definida en un swagger.json i la url de la API és http://tomcat01-test.pub.dtvc.local:8214/v2
+
+Hi ha d'haver una interfície de login d'usuari on demanarem el Usuari, la Contrasenya i podrem escollir a quin Digition ens connectarem d'entre PRODUCCIO, DOCUMENTACIO, ARXIU, EMISSIO i PARLAMENT.
+
+El Usuari no ha de ser un email, per tant no cal comprovar que tingui el símbol @.
+
+El camp contrassenya pot estar buit.
+
+La API de login és /autenticacio/login
+
+El mètode és POST amb el body {
+  "digition": "string",
+  "login": "string",
+  "clau": "string"
+}
+
+La resposta és del tipus {
+  "createdAt": "2025-11-03T15:34:01+01:00",
+  "expiresAt": "2025-11-10T15:34:01+01:00",
+  "renewAfter": "2025-11-04T15:34:01+01:00",
+  "renewAfterSeconds": 86400,
+  "accessToken": "eyJhbGciOiJIUzUxMiJ9.eyJkaWciOiJQUk9EVUNDSU8iLCJzdWIiOiJjdWN1X2VkdSIsInVpZCI6OTQ1MywiZ2lkIjoxMDA1LCJpYXQiOjE3NjIxODA0NDEsImV4cCI6MTc2Mjc4NTI0MX0.GzBGxgUoftep-AWLdcy1dE8JW2ofJdWBZJ4PluLBxpqHxuqrQeMcEUabsOqt0km2SndX6BYzlE1qxUSkbmtlQA"
+}
+
+A la resposta del login ens donarà un accessToken que utiltzraem a la resta de crides com a Authorization.
+
+Si descodifiques el jwt pots obtenir algunes dades de l'usuari connectat, per exemple:{ "dig": "PRODUCCIO", "sub": "cucu_edu", "uid": 9453, "gid": 1005, "iat": 1761199947, "cli": "chrome", "clv": "136.0.0.0", "fev": "4.2539.2", "exp": 1761804747 } on dig és el Digition al que estem accedint, sub és el codi curt de l'usuari, uid el identificador de l'usuari, gid és el identificador del grup principal de l'usuari.
+
+Els endpoints per usuaris són /usuaris i els de rols són /rols
+
+Quan ja hem entrat i cliquem a Usuaris no hem de fer cap crida a la api de /usuaris , hem de mostrar un formulari per poder filtrar els usuaris en base als camps login, nom o cognom. Si cliquem a cercar llavors fa una crida al endpoint /usuaris/search POST passant aquests parametres al body { "login": "", "nom": "", "cognom": ""} la cerca és paginada en base els paràmetres del la query de page que indica el número de la pàgina i pageSize que indica el número d'elements per pàgina, es pot ordenar per sortBy on poden ser name, description, roleId i el sortOrder pot ser asc o desc, també hem de passar el digition amb el que ens hem logat al inici. El camp digition amb el valor quan ens hem logat també va a la query i no al payload.ç
+
+Al Authorization del header va directament el accessToken sense necessitat de posar Bearer: API Key on la Key és Authorization el Value el accesToken obtingut al login i s'afegeix al Header.
+
+Això funciona així per totes les crides de la api amb autorització.
+
+La resposta que s'obté de /usuaris/search és d'aquest estil [ { "login": "cucu_edu", "id": "9453", "nom": "Eduard", "cognoms": "Cucurella Subirana", "email": "ecucurella.t@ccma.cat", "primaryGroupId": 1031 }, { "login": "cucu_edu.bk", "id": "10815", "nom": "Eduard", "cognoms": "Cucurella Subirana", "email": "ecucurella.t@ccma.cat", "primaryGroupId": 1567 }, { "login": "cucu_nat", "id": "2605", "nom": "Natalia ", "cognoms": "Cucurella Alcoriza", "email": "ncucurella.c@tvcatalunya.com", "primaryGroupId": 1 }, { "login": "cucu_ros", "id": "3494", "nom": "Roser", "cognoms": "Cucurella Borràs", "email": "rcucurella.c@tv3.cat", "primaryGroupId": 1525 } ], s'hauria d'adaptar la recepció de dades i el pintat de les mateixes en pantalla segons el que es rep.
+
+També s'ha d'afegir paginació als resultats de cerca, és a dir, per defecte ets a la pàgina 1 però hi hauria d'haver un paginador per anar pàgina 2, 3, etc i si el clico em fa la petició del mateix número d'elements però a la pàgina corresponent.
+
+S'ha de crear un formulari per crear un nou usuari. Has de demanar el Login, el Nom, el Cognoms, el Email, el GrupPrimariID i si està Actiu o no, i un camp de text per notes. Quan cliques a Crear has de consumir el endpoint /usuaris que es de tipus POST passant-li les dades al body { "login": "string", "nom": "string", "cognoms": "string", "email": "string", "primaryGroupId": 0, "active": true, "notes": "string" }. Al endpoint per crear un usuari també li has de passar per query el valor del digition on volem crear l'usuari.
+
+Si l'usuari no es pot crear i la resposta de l'endpoint és diferent a un codi 200 hauries de mostrar al missatge cap el usuari la resposta del endpoint, concretament el camp missatge, exemple: { "missatge": "Existeix un usuari amb el mateix username", "debugInfo": "/v2/usuaris" } i també el debuginfo a la sortida si ha anat malament.
+
+Si cliques al botó per editar un usuari hauries d'obrir el mateix formulari de creació però carregant les dades que tens a la taula.
+
+Quan mostrem els resultats de cerca també ens hem de quedar amb el id del usuari, ja que quan volem editar les seves dades i volem desar el contingut modificat hem de consumir el endpoint /usuaris/{userid} on el userid és el id dels resultats de cerca i pel body hi podem passar els valors { "login": "string", "nom": "string", "cognoms": "string", "email": "string", "primaryGroupId": 0, "active": true, "notes": "string" } Al formulari d'edició no s'ha de poder modificar el valor del login.
+
+Quan cliquem el botó per eliminar un usuari has de demanar comfirmació, i si és correcte utilitzar el endpoint /usuaris/{userid} de DELETE passant el id del usuari a eliminar.
+
+Per editar i per eliminar també s'ha de passar el paràmetre digition a la query.
+
+Quan cliquem a Rols has de consumir el endpoint /rols/search on també tens el page, pageSize, sortBy i sortOrder com a /usuaris/search i en aquest cas podem cercar per Rol ID (roleid) i Nom (name), en aquest endpoint també s'ha de passar el query digition. /roles/search és un GET no un POST.
+
+El que et retorna la cerca de rols és algo tipus això { "id": "1039", "nom": "ADMINISTRADOR_GRUP_NOU", "descripcio": "rol d'administrador de grup genèric" }, necessito que et guardis el id per accions posteriors com editar o eliminar i que només mostris el nom i la descripció.
+
+El botó afegir rol ha d'obrir un formulari per crear un nou rol amb els camps Nom i Descripció, consumir el endpoint /rols POST passant per query el digition i per body { "nom": "string", "descripcio": "string" } El botó editar ha d'obrir el mateix formulari amb les dades del rol i el seu id , només es pot modificar la descripció i si es prem a guardar ha d'utilitzar el endpoint /rols/{roleid} PUT on el roleid és el id del rol , passnat per query el digition i en el body la descripció. El botó d'eliminar ha de d'utilitzar el mateix métode pero amb DELETE. Per eliminar un rol necessito comfirmació abans d'eliminar-lo com a usuaris.
+
+
+ADJUNTAR EL FITXER http://tomcat01-test.pub.dtvc.local:8214/v2/api/swagger.json
