@@ -311,30 +311,51 @@ export const rolesApi = {
     if (!response.ok) throw new Error('Role not found');
     return response.json();
   },
-  create: async (data: Omit<typeof mockRoles[0], 'id'>) => {
-    const response = await fetch(`${API_BASE_URL}/rols`, {
+  create: async (data: { nom: string; descripcio: string; digition: string }) => {
+    const queryParams = new URLSearchParams({
+      digition: data.digition,
+    });
+
+    const response = await fetch(`${API_BASE_URL}/rols?${queryParams}`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify(data),
+      body: JSON.stringify({ nom: data.nom, descripcio: data.descripcio }),
     });
-    if (!response.ok) throw new Error('Failed to create role');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.missatge || 'Failed to create role');
+    }
     return response.json();
   },
-  update: async (id: string, data: Partial<typeof mockRoles[0]>) => {
-    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+  update: async (id: string, data: { descripcio: string; digition: string }) => {
+    const queryParams = new URLSearchParams({
+      digition: data.digition,
+    });
+
+    const response = await fetch(`${API_BASE_URL}/rols/${id}?${queryParams}`, {
       method: 'PUT',
       headers: getHeaders(),
-      body: JSON.stringify(data),
+      body: JSON.stringify({ descripcio: data.descripcio }),
     });
-    if (!response.ok) throw new Error('Failed to update role');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.missatge || 'Failed to update role');
+    }
     return response.json();
   },
-  delete: async (id: string) => {
-    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+  delete: async (id: string, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition: digition,
+    });
+
+    const response = await fetch(`${API_BASE_URL}/rols/${id}?${queryParams}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to delete role');
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.missatge || 'Failed to delete role');
+    }
     return { success: true };
   },
 };

@@ -11,6 +11,8 @@ import { Plus, Pencil, Trash2, Search } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Textarea } from '@/components/ui/textarea';
 
 const Roles = () => {
   const { toast } = useToast();
@@ -25,6 +27,12 @@ const Roles = () => {
   const [sortBy, setSortBy] = useState<string>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [editingRole, setEditingRole] = useState<any>(null);
+  const [formData, setFormData] = useState({
+    nom: '',
+    descripcio: '',
+  });
 
   const searchMutation = useMutation({
     mutationFn: rolesApi.search,
@@ -40,8 +48,52 @@ const Roles = () => {
     },
   });
 
+  const createMutation = useMutation({
+    mutationFn: rolesApi.create,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      toast({
+        title: 'Rol creat',
+        description: 'El rol s\'ha creat correctament.',
+      });
+      setIsDialogOpen(false);
+      resetForm();
+      handleSearch();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut crear el rol.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }: { id: string; data: { descripcio: string; digition: string } }) =>
+      rolesApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      toast({
+        title: 'Rol actualitzat',
+        description: 'El rol s\'ha actualitzat correctament.',
+      });
+      setIsDialogOpen(false);
+      resetForm();
+      handleSearch();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut actualitzar el rol.',
+        variant: 'destructive',
+      });
+    },
+  });
+
   const deleteMutation = useMutation({
-    mutationFn: rolesApi.delete,
+    mutationFn: ({ id, digition }: { id: string; digition: string }) =>
+      rolesApi.delete(id, digition),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['roles'] });
       toast({
@@ -49,6 +101,13 @@ const Roles = () => {
         description: 'El rol s\'ha eliminat correctament.',
       });
       handleSearch();
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut eliminar el rol.',
+        variant: 'destructive',
+      });
     },
   });
 
@@ -93,6 +152,72 @@ const Roles = () => {
     }
   };
 
+  const resetForm = () => {
+    setFormData({ nom: '', descripcio: '' });
+    setEditingRole(null);
+  };
+
+  const handleOpenCreateDialog = () => {
+    resetForm();
+    setIsDialogOpen(true);
+  };
+
+  const handleOpenEditDialog = (role: any) => {
+    setEditingRole(role);
+    setFormData({
+      nom: role.nom,
+      descripcio: role.descripcio,
+    });
+    setIsDialogOpen(true);
+  };
+
+  const handleSubmit = () => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const user = JSON.parse(userData);
+
+    if (editingRole) {
+      // Editar rol - només es pot modificar la descripció
+      updateMutation.mutate({
+        id: editingRole.id,
+        data: {
+          descripcio: formData.descripcio,
+          digition: user.digition,
+        },
+      });
+    } else {
+      // Crear nou rol
+      createMutation.mutate({
+        nom: formData.nom,
+        descripcio: formData.descripcio,
+        digition: user.digition,
+      });
+    }
+  };
+
+  const handleDelete = (roleId: string) => {
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    const user = JSON.parse(userData);
+    deleteMutation.mutate({ id: roleId, digition: user.digition });
+  };
+
   return (
     <div className="p-8">
       <div className="mb-6 flex items-center justify-between">
@@ -100,7 +225,7 @@ const Roles = () => {
           <h1 className="text-3xl font-bold">Rols</h1>
           <p className="text-muted-foreground mt-2">Gestionar els rols i permisos del sistema</p>
         </div>
-        <Button>
+        <Button onClick={handleOpenCreateDialog}>
           <Plus className="mr-2 h-4 w-4" />
           Afegir Rol
         </Button>
@@ -200,13 +325,13 @@ const Roles = () => {
                     <TableCell>{role.descripcio}</TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" onClick={() => handleOpenEditDialog(role)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => deleteMutation.mutate(role.id)}
+                          onClick={() => handleDelete(role.id)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -244,6 +369,52 @@ const Roles = () => {
           </CardContent>
         </Card>
       )}
+
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{editingRole ? 'Editar Rol' : 'Afegir Rol'}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="nom">Nom</Label>
+              <Input
+                id="nom"
+                value={formData.nom}
+                onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
+                placeholder="Nom del rol..."
+                disabled={!!editingRole}
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="descripcio">Descripció</Label>
+              <Textarea
+                id="descripcio"
+                value={formData.descripcio}
+                onChange={(e) => setFormData({ ...formData, descripcio: e.target.value })}
+                placeholder="Descripció del rol..."
+                rows={4}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+              Cancel·lar
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              disabled={
+                (!editingRole && (!formData.nom.trim() || !formData.descripcio.trim())) ||
+                (editingRole && !formData.descripcio.trim()) ||
+                createMutation.isPending ||
+                updateMutation.isPending
+              }
+            >
+              {createMutation.isPending || updateMutation.isPending ? 'Guardant...' : 'Guardar'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
