@@ -276,14 +276,17 @@ export const rolesApi = {
       ...(params.sortOrder && { sortOrder: params.sortOrder }),
     });
 
-    const body: any = {};
-    if (params.roleid !== undefined && params.roleid !== null) body.roleid = params.roleid;
-    if (params.name && params.name.trim()) body.name = params.name.trim();
+    // Afegir paràmetres de cerca a la query (GET no pot tenir body)
+    if (params.roleid !== undefined && params.roleid !== null) {
+      queryParams.append('roleid', params.roleid.toString());
+    }
+    if (params.name && params.name.trim()) {
+      queryParams.append('name', params.name.trim());
+    }
 
     const response = await fetch(`${API_BASE_URL}/rols/search?${queryParams}`, {
       method: 'GET',
       headers: getHeaders(),
-      body: JSON.stringify(body),
     });
     
     if (!response.ok) {
