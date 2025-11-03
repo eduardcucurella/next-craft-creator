@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Textarea } from '@/components/ui/textarea';
 
 const Roles = () => {
@@ -29,6 +30,8 @@ const Roles = () => {
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<any>(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [roleToDelete, setRoleToDelete] = useState<{ id: string; nom: string } | null>(null);
   const [formData, setFormData] = useState({
     nom: '',
     descripcio: '',
@@ -100,6 +103,8 @@ const Roles = () => {
         title: 'Rol eliminat',
         description: 'El rol s\'ha eliminat correctament.',
       });
+      setDeleteDialogOpen(false);
+      setRoleToDelete(null);
       handleSearch();
     },
     onError: (error: any) => {
@@ -203,7 +208,12 @@ const Roles = () => {
     }
   };
 
-  const handleDelete = (roleId: string) => {
+  const handleDeleteClick = (role: any) => {
+    setRoleToDelete({ id: role.id, nom: role.nom });
+    setDeleteDialogOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
     const userData = localStorage.getItem('user');
     if (!userData) {
       toast({
@@ -215,7 +225,10 @@ const Roles = () => {
     }
 
     const user = JSON.parse(userData);
-    deleteMutation.mutate({ id: roleId, digition: user.digition });
+    
+    if (roleToDelete) {
+      deleteMutation.mutate({ id: roleToDelete.id, digition: user.digition });
+    }
   };
 
   return (
@@ -331,7 +344,7 @@ const Roles = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => handleDelete(role.id)}
+                          onClick={() => handleDeleteClick(role)}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -415,6 +428,27 @@ const Roles = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Estàs segur?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Aquesta acció no es pot desfer. Això eliminarà permanentment el rol{' '}
+              <strong>{roleToDelete?.nom}</strong>.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel·lar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleConfirmDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {deleteMutation.isPending ? 'Eliminant...' : 'Eliminar'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
