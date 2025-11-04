@@ -131,10 +131,27 @@ export const usersApi = {
     return response.json();
   },
   getById: async (id: string) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}`, {
       headers: getHeaders(),
     });
     if (!response.ok) throw new Error('User not found');
+    return response.json();
+  },
+  saveNotes: async (userId: string, notes: string, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition,
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}/notes?${queryParams}`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ notes }),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.missatge || 'Failed to save notes';
+      throw new Error(errorMessage);
+    }
     return response.json();
   },
   create: async (data: {

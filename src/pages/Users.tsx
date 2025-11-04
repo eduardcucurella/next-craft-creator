@@ -62,7 +62,23 @@ const Users = () => {
 
   const createMutation = useMutation({
     mutationFn: usersApi.create,
-    onSuccess: () => {
+    onSuccess: async (data) => {
+      // Si hi ha notes, cridar l'endpoint de notes
+      const userData = localStorage.getItem('user');
+      if (userForm.notes && userData) {
+        try {
+          const user = JSON.parse(userData);
+          await usersApi.saveNotes(data.id, userForm.notes, user.digition);
+        } catch (error) {
+          console.error('Error saving notes:', error);
+          toast({
+            title: 'Avís',
+            description: 'Usuari creat però no s\'han pogut desar les notes.',
+            variant: 'destructive',
+          });
+        }
+      }
+      
       toast({
         title: 'Usuari creat',
         description: 'L\'usuari s\'ha creat correctament.',
@@ -188,19 +204,30 @@ const Users = () => {
     setIsDialogOpen(true);
   };
 
-  const handleOpenEditDialog = (user: any) => {
+  const handleOpenEditDialog = async (user: any) => {
     setIsEditMode(true);
     setEditingUserId(user.id);
-    setUserForm({
-      login: user.login,
-      nom: user.nom,
-      cognoms: user.cognoms,
-      email: user.email,
-      primaryGroupId: user.primaryGroupId,
-      active: user.active,
-      notes: user.notes || '',
-    });
-    setIsDialogOpen(true);
+    
+    // Carregar les dades completes de l'usuari des del servidor
+    try {
+      const fullUserData = await usersApi.getById(user.id);
+      setUserForm({
+        login: fullUserData.login,
+        nom: fullUserData.nom,
+        cognoms: fullUserData.cognoms,
+        email: fullUserData.email,
+        primaryGroupId: fullUserData.primaryGroupId,
+        active: fullUserData.active !== undefined ? fullUserData.active : true,
+        notes: fullUserData.notes || '',
+      });
+      setIsDialogOpen(true);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'No s\'han pogut carregar les dades de l\'usuari.',
+        variant: 'destructive',
+      });
+    }
   };
 
   const handleSaveUser = () => {
