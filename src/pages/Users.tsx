@@ -210,7 +210,12 @@ const Users = () => {
     
     // Carregar les dades completes de l'usuari des del servidor
     try {
-      const fullUserData = await usersApi.getById(user.id);
+      const userData = localStorage.getItem('user');
+      if (!userData) {
+        throw new Error('No user data found');
+      }
+      const currentUser = JSON.parse(userData);
+      const fullUserData = await usersApi.getById(user.id, currentUser.digition);
       setUserForm({
         login: fullUserData.login,
         nom: fullUserData.nom,

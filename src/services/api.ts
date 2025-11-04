@@ -130,8 +130,12 @@ export const usersApi = {
     if (!response.ok) throw new Error('Failed to fetch users');
     return response.json();
   },
-  getById: async (id: string) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}`, {
+  getById: async (id: string, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition,
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}?${queryParams}`, {
       headers: getHeaders(),
     });
     if (!response.ok) throw new Error('User not found');

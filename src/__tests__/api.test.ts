@@ -10,7 +10,7 @@ describe('API Services', () => {
     });
 
     it('fetches user by id', async () => {
-      const user = await usersApi.getById('1');
+      const user = await usersApi.getById('1', '100');
       expect(user).toHaveProperty('id');
       expect(user).toHaveProperty('email');
     });
