@@ -143,7 +143,7 @@ export const usersApi = {
     });
     
     const response = await fetch(`${API_BASE_URL}/usuaris/${userId}/notes?${queryParams}`, {
-      method: 'POST',
+      method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify({ notes }),
     });
