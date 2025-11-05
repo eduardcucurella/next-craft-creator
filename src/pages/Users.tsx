@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from '@/services/api';
+import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -19,6 +20,7 @@ import { Switch } from '@/components/ui/switch';
 const Users = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { groups, getGroupName } = useAuth();
 
   const [searchParams, setSearchParams] = useState({
     login: '',
@@ -350,14 +352,22 @@ const Users = () => {
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="new-primaryGroupId">Grup Principal ID *</Label>
-                  <Input
-                    id="new-primaryGroupId"
-                    type="number"
-                    value={userForm.primaryGroupId}
-                    onChange={(e) => setUserForm({ ...userForm, primaryGroupId: Number(e.target.value) })}
-                    placeholder="0"
-                  />
+                  <Label htmlFor="new-primaryGroupId">Grup Principal *</Label>
+                  <Select
+                    value={userForm.primaryGroupId.toString()}
+                    onValueChange={(value) => setUserForm({ ...userForm, primaryGroupId: Number(value) })}
+                  >
+                    <SelectTrigger id="new-primaryGroupId">
+                      <SelectValue placeholder="Selecciona un grup..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {groups.map((group) => (
+                        <SelectItem key={group.id} value={group.id}>
+                          {group.nom}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="new-active" className="flex items-center gap-2">
@@ -512,7 +522,7 @@ const Users = () => {
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
                       <Badge variant="secondary">
-                        {user.primaryGroupId}
+                        {getGroupName(user.primaryGroupId)}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
