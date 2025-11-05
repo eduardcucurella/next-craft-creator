@@ -264,17 +264,26 @@ export const profilesApi = {
 
 export const groupsApi = {
   getAll: async () => {
-    return mockGroups;
+    const response = await fetch(`${API_BASE_URL}/grups`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch groups');
+    }
+
+    return response.json();
   },
   getById: async (id: string) => {
     const group = mockGroups.find(g => g.id === id);
     if (!group) throw new Error('Group not found');
     return group;
   },
-  create: async (data: Omit<typeof mockGroups[0], 'id' | 'memberCount'>) => {
-    return { id: String(Date.now()), memberCount: 0, ...data };
+  create: async (data: { nom: string }) => {
+    return { id: String(Date.now()), ...data };
   },
-  update: async (id: string, data: Partial<typeof mockGroups[0]>) => {
+  update: async (id: string, data: Partial<{ nom: string }>) => {
     const group = mockGroups.find(g => g.id === id);
     if (!group) throw new Error('Group not found');
     return { ...group, ...data };

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authApi } from '@/services/api';
+import { authApi, groupsApi } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
@@ -24,12 +24,19 @@ interface User {
   digition: string;
 }
 
+interface Group {
+  id: string;
+  nom: string;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
+  groups: Group[];
   login: (login: string, clau: string, digition: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
+  getGroupName: (groupId: number) => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -37,11 +44,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [groups, setGroups] = useState<Group[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
+    const storedGroups = localStorage.getItem('groups');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
+    }
+    if (storedGroups) {
+      setGroups(JSON.parse(storedGroups));
     }
     setLoading(false);
   }, []);
@@ -77,12 +89,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Desar l'accessToken net
     localStorage.setItem('accessToken', cleanToken);
+    
+    // Carregar els grups després del login
+    try {
+      const groupsData = await groupsApi.getAll();
+      setGroups(groupsData);
+      localStorage.setItem('groups', JSON.stringify(groupsData));
+    } catch (error) {
+      console.error('Error loading groups:', error);
+    }
   };
 
   const logout = () => {
     setUser(null);
+    setGroups([]);
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
+    localStorage.removeItem('groups');
+  };
+
+  const getGroupName = (groupId: number): string => {
+    const group = groups.find(g => g.id === groupId.toString());
+    return group ? group.nom : groupId.toString();
   };
 
   return (
@@ -90,9 +118,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         loading,
+        groups,
         login,
         logout,
         isAuthenticated: !!user,
+        getGroupName,
       }}
     >
       {children}
