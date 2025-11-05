@@ -76,5 +76,8 @@ El que et retorna la cerca de rols és algo tipus això { "id": "1039", "nom": "
 
 El botó afegir rol ha d'obrir un formulari per crear un nou rol amb els camps Nom i Descripció, consumir el endpoint /rols POST passant per query el digition i per body { "nom": "string", "descripcio": "string" } El botó editar ha d'obrir el mateix formulari amb les dades del rol i el seu id , només es pot modificar la descripció i si es prem a guardar ha d'utilitzar el endpoint /rols/{roleid} PUT on el roleid és el id del rol , passnat per query el digition i en el body la descripció. El botó d'eliminar ha de d'utilitzar el mateix métode pero amb DELETE. Per eliminar un rol necessito comfirmació abans d'eliminar-lo com a usuaris.
 
+Quan t'autenfiques podries fer la crida GET a /grups que et retorna els ids i els noms dels grups, per exemple [ { "id": "1013", "nom": "324" }, { "id": "1014", "nom": "Aliena" }] en aquest cas no cal passar el digition ja que el mètode de la api ja l'agafa del jwt. Necessito que et guardis la relació de ids i noms i a tot arreu on ara hi poses el id del grup s'ha de visualitzar el seu nom, o si creem un nou usuari en lloc de demanar un id hauria de ser un desplegable on puguis escollir el nom del grup.
+
+
 
 ADJUNTAR EL FITXER http://tomcat01-test.pub.dtvc.local:8214/v2/api/swagger.json
