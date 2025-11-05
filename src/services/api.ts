@@ -1,3 +1,8 @@
+//TEST: 'http://tomcat01-test.pub.dtvc.local:8214/v2'
+//PRE: 'http://digi01-pre.dtvc.local:8214/v2'
+//PRE: 'http://digi02-pre.dtvc.local:8214/v2'
+//BETA: 'http://digi-beta.dtvc.local:8214/v2'
+//PRO: 'https://digition.ccma.cat/digition-api/v2'
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://tomcat01-test.pub.dtvc.local:8214/v2';
 
 // Get API key from environment or stored token

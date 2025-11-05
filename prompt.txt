@@ -48,11 +48,21 @@ La resposta que s'obté de /usuaris/search és d'aquest estil [ { "login": "cucu
 
 També s'ha d'afegir paginació als resultats de cerca, és a dir, per defecte ets a la pàgina 1 però hi hauria d'haver un paginador per anar pàgina 2, 3, etc i si el clico em fa la petició del mateix número d'elements però a la pàgina corresponent.
 
-S'ha de crear un formulari per crear un nou usuari. Has de demanar el Login, el Nom, el Cognoms, el Email, el GrupPrimariID i si està Actiu o no, i un camp de text per notes. Quan cliques a Crear has de consumir el endpoint /usuaris que es de tipus POST passant-li les dades al body { "login": "string", "nom": "string", "cognoms": "string", "email": "string", "primaryGroupId": 0, "active": true, "notes": "string" }. Al endpoint per crear un usuari també li has de passar per query el valor del digition on volem crear l'usuari.
+S'ha de crear un formulari per crear un nou usuari. Has de demanar el Login, el Nom, el Cognoms, el Email, el GrupPrimariID i si està Actiu o no, i un camp de text per notes. Quan cliques a Crear has de consumir el endpoint /usuaris que es de tipus POST passant-li les dades al body { "login": "string", "nom": "string", "cognoms": "string", "email": "string", "primaryGroupId": 0, "active": true }. Al endpoint per crear un usuari també li has de passar per query el valor del digition on volem crear l'usuari.
+
+Quan estem creant un usuari i ja hem executat el mètode de creació de l'usuari a /usuaris POST si ha anat bé, codi 200, i a la resposta tenim el id del usuari i al formulari s'ha entrat informació al camp notes, hauríem d'executar el endpoint /usuaris/{userId}/notes de tipus PUT on el userId és el id de l'usuari i al body hi passem les notes { "notes": "string"} per desar les notes d'aquest usuari i per query s'ha de passar el paràmetre digition.
 
 Si l'usuari no es pot crear i la resposta de l'endpoint és diferent a un codi 200 hauries de mostrar al missatge cap el usuari la resposta del endpoint, concretament el camp missatge, exemple: { "missatge": "Existeix un usuari amb el mateix username", "debugInfo": "/v2/usuaris" } i també el debuginfo a la sortida si ha anat malament.
 
-Si cliques al botó per editar un usuari hauries d'obrir el mateix formulari de creació però carregant les dades que tens a la taula.
+Si cliques al botó per editar un usuari hauries d'obrir el mateix formulari de creació i cridar el endpoint /usuaris/id/{userId} GET on el userId és el id i recuperar les dades que ens retorna que hi inclou les notes en aquest format {
+  "login": "cucu",
+  "id": "11168",
+  "nom": "Edu",
+  "cognoms": "Cucurella",
+  "email": "eduard.cucu.cat@gmail.com",
+  "primaryGroupId": 1001,
+  "notes": "Notes Cucu 2"
+}
 
 Quan mostrem els resultats de cerca també ens hem de quedar amb el id del usuari, ja que quan volem editar les seves dades i volem desar el contingut modificat hem de consumir el endpoint /usuaris/{userid} on el userid és el id dels resultats de cerca i pel body hi podem passar els valors { "login": "string", "nom": "string", "cognoms": "string", "email": "string", "primaryGroupId": 0, "active": true, "notes": "string" } Al formulari d'edició no s'ha de poder modificar el valor del login.
 
