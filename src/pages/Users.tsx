@@ -42,6 +42,7 @@ const Users = () => {
   const [selectedUserLogin, setSelectedUserLogin] = useState<string>('');
   const [userRoles, setUserRoles] = useState<any[]>([]);
   const [availableRoles, setAvailableRoles] = useState<any[]>([]);
+  const [roleSearchTerm, setRoleSearchTerm] = useState('');
   const [userForm, setUserForm] = useState({
     login: '',
     nom: '',
@@ -745,28 +746,40 @@ const Users = () => {
             <div className="space-y-4">
               <div>
                 <h3 className="font-semibold mb-3">Rols Disponibles</h3>
+                <div className="mb-3">
+                  <Input
+                    placeholder="Cercar rols..."
+                    value={roleSearchTerm}
+                    onChange={(e) => setRoleSearchTerm(e.target.value)}
+                    className="w-full"
+                  />
+                </div>
                 <div className="space-y-2 border rounded-lg p-3 max-h-[400px] overflow-y-auto">
-                  {availableRoles.length === 0 ? (
+                  {availableRoles.filter(role => 
+                    role.nom.toLowerCase().includes(roleSearchTerm.toLowerCase())
+                  ).length === 0 ? (
                     <p className="text-sm text-muted-foreground text-center py-4">
-                      No hi ha rols disponibles per afegir
+                      {roleSearchTerm ? 'No s\'han trobat rols amb aquest criteri' : 'No hi ha rols disponibles per afegir'}
                     </p>
                   ) : (
-                    availableRoles.map((role) => (
-                      <div
-                        key={role.id}
-                        className="flex items-center justify-between p-2 hover:bg-accent rounded-md"
-                      >
-                        <span className="text-sm">{role.nom}</span>
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleAddRole(role.id)}
-                          disabled={assignRoleMutation.isPending}
+                    availableRoles
+                      .filter(role => role.nom.toLowerCase().includes(roleSearchTerm.toLowerCase()))
+                      .map((role) => (
+                        <div
+                          key={role.id}
+                          className="flex items-center justify-between p-2 hover:bg-accent rounded-md"
                         >
-                          <Plus className="h-3 w-3" />
-                        </Button>
-                      </div>
-                    ))
+                          <span className="text-sm">{role.nom}</span>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => handleAddRole(role.id)}
+                            disabled={assignRoleMutation.isPending}
+                          >
+                            <Plus className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ))
                   )}
                 </div>
               </div>
