@@ -238,6 +238,38 @@ export const usersApi = {
     }
     return { success: true };
   },
+  assignRole: async (userId: number, roleId: number, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition,
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}/rol/${roleId}/assignar?${queryParams}`, {
+      method: 'POST',
+      headers: getHeaders(),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.missatge || 'Failed to assign role';
+      throw new Error(errorMessage);
+    }
+    return response.json();
+  },
+  removeRole: async (userId: number, roleId: number, digition: string) => {
+    const queryParams = new URLSearchParams({
+      digition,
+    });
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}/rol/${roleId}/eliminar?${queryParams}`, {
+      method: 'DELETE',
+      headers: getHeaders(),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.missatge || 'Failed to remove role';
+      throw new Error(errorMessage);
+    }
+    return response.json();
+  },
 };
 
 export const profilesApi = {
@@ -344,6 +376,14 @@ export const rolesApi = {
       headers: getHeaders(),
     });
     if (!response.ok) throw new Error('Role not found');
+    return response.json();
+  },
+  getUserRoles: async (userId: number, digition: string) => {
+    const response = await fetch(`${API_BASE_URL}/rols/user/${userId}?digition=${digition}`, {
+      method: 'GET',
+      headers: getHeaders(),
+    });
+    if (!response.ok) throw new Error('Failed to fetch user roles');
     return response.json();
   },
   create: async (data: { nom: string; descripcio: string; digition: string }) => {

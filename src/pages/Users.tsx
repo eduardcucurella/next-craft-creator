@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { usersApi } from '@/services/api';
+import { usersApi, rolesApi } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Plus, Pencil, Trash2, Search } from 'lucide-react';
+import { Plus, Pencil, Trash2, Search, Shield } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
@@ -20,7 +20,7 @@ import { Switch } from '@/components/ui/switch';
 const Users = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { groups, getGroupName } = useAuth();
+  const { groups, getGroupName, roles, getRoleName } = useAuth();
 
   const [searchParams, setSearchParams] = useState({
     login: '',
@@ -37,6 +37,11 @@ const Users = () => {
   const [editingUserId, setEditingUserId] = useState<number | null>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [userToDelete, setUserToDelete] = useState<{ id: number; login: string } | null>(null);
+  const [rolesDialogOpen, setRolesDialogOpen] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [selectedUserLogin, setSelectedUserLogin] = useState<string>('');
+  const [userRoles, setUserRoles] = useState<any[]>([]);
+  const [availableRoles, setAvailableRoles] = useState<any[]>([]);
   const [userForm, setUserForm] = useState({
     login: '',
     nom: '',
@@ -133,6 +138,42 @@ const Users = () => {
       toast({
         title: 'Error',
         description: error.message || 'No s\'ha pogut eliminar l\'usuari.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const assignRoleMutation = useMutation({
+    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: number; digition: string }) =>
+      usersApi.assignRole(userId, roleId, digition),
+    onSuccess: () => {
+      toast({
+        title: 'Rol assignat',
+        description: 'El rol s\'ha assignat correctament a l\'usuari.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut assignar el rol.',
+        variant: 'destructive',
+      });
+    },
+  });
+
+  const removeRoleMutation = useMutation({
+    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: number; digition: string }) =>
+      usersApi.removeRole(userId, roleId, digition),
+    onSuccess: () => {
+      toast({
+        title: 'Rol eliminat',
+        description: 'El rol s\'ha eliminat correctament de l\'usuari.',
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: 'Error',
+        description: error.message || 'No s\'ha pogut eliminar el rol.',
         variant: 'destructive',
       });
     },
@@ -287,6 +328,94 @@ const Users = () => {
     if (userToDelete) {
       deleteMutation.mutate({ id: userToDelete.id, digition: user.digition });
     }
+  };
+
+  const handleOpenRolesDialog = async (user: any) => {
+    setSelectedUserId(user.id);
+    setSelectedUserLogin(user.login);
+    
+    const userData = localStorage.getItem('user');
+    if (!userData) {
+      toast({
+        title: 'Error',
+        description: 'No s\'ha pogut obtenir el digition.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    const currentUser = JSON.parse(userData);
+    
+    try {
+      const userRolesData = await rolesApi.getUserRoles(user.id, currentUser.digition);
+      setUserRoles(Array.isArray(userRolesData) ? userRolesData : []);
+      setAvailableRoles(roles.filter(role => 
+        !userRolesData.some((ur: any) => ur.id === role.id)
+      ));
+      setRolesDialogOpen(true);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'No s\'han pogut carregar els rols de l\'usuari.',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const handleAddRole = async (roleId: string) => {
+    const userData = localStorage.getItem('user');
+    if (!userData || selectedUserId === null) return;
+    
+    const user = JSON.parse(userData);
+    
+    try {
+      await assignRoleMutation.mutateAsync({
+        userId: selectedUserId,
+        roleId: Number(roleId),
+        digition: user.digition,
+      });
+      
+      // Actualitzar les llistes locals
+      const roleToAdd = roles.find(r => r.id === roleId);
+      if (roleToAdd) {
+        setUserRoles([...userRoles, roleToAdd]);
+        setAvailableRoles(availableRoles.filter(r => r.id !== roleId));
+      }
+    } catch (error) {
+      console.error('Error adding role:', error);
+    }
+  };
+
+  const handleRemoveRole = async (roleId: string) => {
+    const userData = localStorage.getItem('user');
+    if (!userData || selectedUserId === null) return;
+    
+    const user = JSON.parse(userData);
+    
+    try {
+      await removeRoleMutation.mutateAsync({
+        userId: selectedUserId,
+        roleId: Number(roleId),
+        digition: user.digition,
+      });
+      
+      // Actualitzar les llistes locals
+      const roleToRemove = roles.find(r => r.id === roleId);
+      if (roleToRemove) {
+        setUserRoles(userRoles.filter(r => r.id !== roleId));
+        setAvailableRoles([...availableRoles, roleToRemove]);
+      }
+    } catch (error) {
+      console.error('Error removing role:', error);
+    }
+  };
+
+  const handleCloseRolesDialog = () => {
+    setRolesDialogOpen(false);
+    setSelectedUserId(null);
+    setSelectedUserLogin('');
+    setUserRoles([]);
+    setAvailableRoles([]);
   };
 
   return (
@@ -531,13 +660,23 @@ const Users = () => {
                           variant="ghost" 
                           size="icon"
                           onClick={() => handleOpenEditDialog(user)}
+                          title="Editar usuari"
                         >
                           <Pencil className="h-4 w-4" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => handleOpenRolesDialog(user)}
+                          title="Gestionar rols globals"
+                        >
+                          <Shield className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => handleDeleteClick(user)}
+                          title="Eliminar usuari"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -596,6 +735,79 @@ const Users = () => {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={rolesDialogOpen} onOpenChange={setRolesDialogOpen}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Gestionar Rols Globals - {selectedUserLogin}</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-6 py-4">
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-3">Rols Disponibles</h3>
+                <div className="space-y-2 border rounded-lg p-3 max-h-[400px] overflow-y-auto">
+                  {availableRoles.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      No hi ha rols disponibles per afegir
+                    </p>
+                  ) : (
+                    availableRoles.map((role) => (
+                      <div
+                        key={role.id}
+                        className="flex items-center justify-between p-2 hover:bg-accent rounded-md"
+                      >
+                        <span className="text-sm">{role.nom}</span>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleAddRole(role.id)}
+                          disabled={assignRoleMutation.isPending}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold mb-3">Rols Assignats</h3>
+                <div className="space-y-2 border rounded-lg p-3 max-h-[400px] overflow-y-auto">
+                  {userRoles.length === 0 ? (
+                    <p className="text-sm text-muted-foreground text-center py-4">
+                      Aquest usuari no té rols assignats
+                    </p>
+                  ) : (
+                    userRoles.map((role) => (
+                      <div
+                        key={role.id}
+                        className="flex items-center justify-between p-2 hover:bg-accent rounded-md"
+                      >
+                        <Badge variant="secondary">{role.nom}</Badge>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => handleRemoveRole(role.id)}
+                          disabled={removeRoleMutation.isPending}
+                        >
+                          <Trash2 className="h-3 w-3" />
+                        </Button>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button onClick={handleCloseRolesDialog}>
+              Tancar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

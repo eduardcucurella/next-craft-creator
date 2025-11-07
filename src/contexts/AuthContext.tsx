@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { authApi, groupsApi } from '@/services/api';
+import { authApi, groupsApi, rolesApi } from '@/services/api';
 import { jwtDecode } from 'jwt-decode';
 
 interface JwtPayload {
@@ -29,14 +29,21 @@ interface Group {
   nom: string;
 }
 
+interface Role {
+  id: string;
+  nom: string;
+}
+
 interface AuthContextType {
   user: User | null;
   loading: boolean;
   groups: Group[];
+  roles: Role[];
   login: (login: string, clau: string, digition: string) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
   getGroupName: (groupId: number) => string;
+  getRoleName: (roleId: number) => string;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -45,15 +52,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [groups, setGroups] = useState<Group[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedGroups = localStorage.getItem('groups');
+    const storedRoles = localStorage.getItem('roles');
     if (storedUser) {
       setUser(JSON.parse(storedUser));
     }
     if (storedGroups) {
       setGroups(JSON.parse(storedGroups));
+    }
+    if (storedRoles) {
+      setRoles(JSON.parse(storedRoles));
     }
     setLoading(false);
   }, []);
@@ -98,19 +110,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch (error) {
       console.error('Error loading groups:', error);
     }
+    
+    // Carregar els rols després del login
+    try {
+      const rolesData = await rolesApi.search({
+        page: 1,
+        pageSize: 1000,
+        digition: decoded.dig,
+      });
+      setRoles(rolesData);
+      localStorage.setItem('roles', JSON.stringify(rolesData));
+    } catch (error) {
+      console.error('Error loading roles:', error);
+    }
   };
 
   const logout = () => {
     setUser(null);
     setGroups([]);
+    setRoles([]);
     localStorage.removeItem('user');
     localStorage.removeItem('accessToken');
     localStorage.removeItem('groups');
+    localStorage.removeItem('roles');
   };
 
   const getGroupName = (groupId: number): string => {
     const group = groups.find(g => g.id === groupId.toString());
     return group ? group.nom : groupId.toString();
+  };
+
+  const getRoleName = (roleId: number): string => {
+    const role = roles.find(r => r.id === roleId.toString());
+    return role ? role.nom : roleId.toString();
   };
 
   return (
@@ -119,10 +151,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         user,
         loading,
         groups,
+        roles,
         login,
         logout,
         isAuthenticated: !!user,
         getGroupName,
+        getRoleName,
       }}
     >
       {children}
