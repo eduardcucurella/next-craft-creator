@@ -252,7 +252,9 @@ export const usersApi = {
       const errorMessage = errorData.missatge || 'Failed to assign role';
       throw new Error(errorMessage);
     }
-    return response.json();
+    // Gestionar resposta 200 sense body JSON
+    const text = await response.text();
+    return text ? JSON.parse(text) : { success: true };
   },
   removeRole: async (userId: number, roleId: number, digition: string) => {
     const queryParams = new URLSearchParams({
@@ -268,7 +270,9 @@ export const usersApi = {
       const errorMessage = errorData.missatge || 'Failed to remove role';
       throw new Error(errorMessage);
     }
-    return response.json();
+    // Gestionar resposta 200 sense body JSON
+    const text = await response.text();
+    return text ? JSON.parse(text) : { success: true };
   },
 };
 

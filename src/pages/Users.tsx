@@ -375,12 +375,12 @@ const Users = () => {
         digition: user.digition,
       });
       
-      // Actualitzar les llistes locals
-      const roleToAdd = roles.find(r => r.id === roleId);
-      if (roleToAdd) {
-        setUserRoles([...userRoles, roleToAdd]);
-        setAvailableRoles(availableRoles.filter(r => r.id !== roleId));
-      }
+      // Refrescar els rols de l'usuari des del servidor
+      const userRolesData = await rolesApi.getUserRoles(selectedUserId, user.digition);
+      setUserRoles(Array.isArray(userRolesData) ? userRolesData : []);
+      setAvailableRoles(roles.filter(role => 
+        !userRolesData.some((ur: any) => ur.id === role.id)
+      ));
     } catch (error) {
       console.error('Error adding role:', error);
     }
@@ -399,12 +399,12 @@ const Users = () => {
         digition: user.digition,
       });
       
-      // Actualitzar les llistes locals
-      const roleToRemove = roles.find(r => r.id === roleId);
-      if (roleToRemove) {
-        setUserRoles(userRoles.filter(r => r.id !== roleId));
-        setAvailableRoles([...availableRoles, roleToRemove]);
-      }
+      // Refrescar els rols de l'usuari des del servidor
+      const userRolesData = await rolesApi.getUserRoles(selectedUserId, user.digition);
+      setUserRoles(Array.isArray(userRolesData) ? userRolesData : []);
+      setAvailableRoles(roles.filter(role => 
+        !userRolesData.some((ur: any) => ur.id === role.id)
+      ));
     } catch (error) {
       console.error('Error removing role:', error);
     }
