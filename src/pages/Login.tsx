@@ -28,7 +28,7 @@ const Login = () => {
         title: 'Inici de sessió correcte',
         description: 'Benvingut de nou!',
       });
-      navigate('/dashboard');
+      navigate('/dashboard/users');
     } catch (error) {
       toast({
         title: 'Error d\'inici de sessió',

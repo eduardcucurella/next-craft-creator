@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi, rolesApi } from '@/services/api';
 import { useAuth } from '@/contexts/AuthContext';
@@ -202,6 +202,11 @@ const Users = () => {
       digition: user.digition,
     });
   };
+
+  // Executar cerca automàticament al carregar la pàgina
+  useEffect(() => {
+    handleSearch();
+  }, []);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
