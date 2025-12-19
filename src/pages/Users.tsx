@@ -556,6 +556,7 @@ const Users = () => {
                 id="login"
                 value={searchParams.login}
                 onChange={(e) => setSearchParams({ ...searchParams, login: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per login..."
               />
             </div>
@@ -565,6 +566,7 @@ const Users = () => {
                 id="nom"
                 value={searchParams.nom}
                 onChange={(e) => setSearchParams({ ...searchParams, nom: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per nom..."
               />
             </div>
@@ -574,6 +576,7 @@ const Users = () => {
                 id="cognom"
                 value={searchParams.cognom}
                 onChange={(e) => setSearchParams({ ...searchParams, cognom: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per cognom..."
               />
             </div>

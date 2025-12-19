@@ -257,6 +257,7 @@ const Roles = () => {
                 type="number"
                 value={searchParams.roleid}
                 onChange={(e) => setSearchParams({ ...searchParams, roleid: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per ID..."
               />
             </div>
@@ -266,6 +267,7 @@ const Roles = () => {
                 id="name"
                 value={searchParams.name}
                 onChange={(e) => setSearchParams({ ...searchParams, name: e.target.value })}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per nom..."
               />
             </div>
