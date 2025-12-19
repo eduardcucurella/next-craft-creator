@@ -53,11 +53,16 @@ const Users = () => {
     notes: '',
   });
 
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalElements, setTotalElements] = useState(0);
+
   const searchMutation = useMutation({
     mutationFn: usersApi.search,
     onSuccess: (data) => {
-      // L'API retorna directament un array d'usuaris
-      setSearchResults(Array.isArray(data) ? data : []);
+      // L'API retorna un objecte amb usuaris, paginació i totals
+      setSearchResults(Array.isArray(data.usuaris) ? data.usuaris : []);
+      setTotalPages(data.paginesTotals || 1);
+      setTotalElements(data.elementsTotals || 0);
     },
     onError: () => {
       toast({
