@@ -135,12 +135,10 @@ export const usersApi = {
     return response.json();
   },
   getById: async (id: string, digition: string) => {
-    const queryParams = new URLSearchParams({
-      digition,
-    });
-    
-    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}`, {
+      method: 'POST',
       headers: getHeaders(),
+      body: JSON.stringify({ digition }),
     });
     if (!response.ok) throw new Error('User not found');
     return response.json();
