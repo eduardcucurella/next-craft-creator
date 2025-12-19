@@ -112,9 +112,9 @@ export const usersApi = {
     if (params.cognom && params.cognom.trim()) body.cognom = params.cognom.trim();
 
     console.log('Search request body:', body);
-    console.log('Search request URL:', `${API_BASE_URL}/usuaris/search?${queryParams}`);
+    console.log('Search request URL:', `${API_BASE_URL}/usuaris/_cerca?${queryParams}`);
 
-    const response = await fetch(`${API_BASE_URL}/usuaris/search?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/_cerca?${queryParams}`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(body),
