@@ -97,24 +97,23 @@ export const usersApi = {
     sortOrder?: 'asc' | 'desc';
     digition: string;
   }) => {
-    const queryParams = new URLSearchParams({
-      page: params.page.toString(),
-      pageSize: params.pageSize.toString(),
+    // Tots els paràmetres ara van al body amb els nous noms
+    const body: any = {
+      pagina: params.page,
+      midaPagina: params.pageSize,
       digition: params.digition,
-      ...(params.sortBy && { sortBy: params.sortBy }),
-      ...(params.sortOrder && { sortOrder: params.sortOrder }),
-    });
-
-    // Només enviar els camps que tenen valor al body
-    const body: any = {};
+    };
+    
+    if (params.sortBy) body.campOrdenacio = params.sortBy;
+    if (params.sortOrder) body.ordreOrdenacio = params.sortOrder;
     if (params.login && params.login.trim()) body.login = params.login.trim();
     if (params.nom && params.nom.trim()) body.nom = params.nom.trim();
     if (params.cognom && params.cognom.trim()) body.cognom = params.cognom.trim();
 
     console.log('Search request body:', body);
-    console.log('Search request URL:', `${API_BASE_URL}/usuaris/_cerca?${queryParams}`);
+    console.log('Search request URL:', `${API_BASE_URL}/usuaris/_cerca`);
 
-    const response = await fetch(`${API_BASE_URL}/usuaris/_cerca?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/_cerca`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(body),
