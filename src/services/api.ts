@@ -135,10 +135,18 @@ export const usersApi = {
     return response.json();
   },
   getById: async (id: string, digition: string) => {
-    const response = await fetch(`${API_BASE_URL}/usuaris/id/${id}`, {
-      method: 'POST',
+    const prefixMap: Record<string, string> = {
+      'PRODUCCIO': 'PRO',
+      'DOCUMENTACIO': 'ARX',
+      'ARXIU': 'ARX',
+      'EMISSIO': 'EMI',
+      'PARLAMENT': 'PAR',
+    };
+    const prefix = prefixMap[digition] || '';
+    const prefixedId = prefix ? `${prefix}${id}` : id;
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/id/${prefixedId}`, {
       headers: getHeaders(),
-      body: JSON.stringify({ digition }),
     });
     if (!response.ok) throw new Error('User not found');
     return response.json();
