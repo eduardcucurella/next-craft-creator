@@ -207,13 +207,19 @@ export const usersApi = {
     notes: string;
     digition: string;
   }) => {
-    const queryParams = new URLSearchParams({
-      digition: data.digition,
-    });
+    const prefixMap: Record<string, string> = {
+      'PRODUCCIO': 'PRO',
+      'DOCUMENTACIO': 'ARX',
+      'ARXIU': 'ARX',
+      'EMISSIO': 'EMI',
+      'PARLAMENT': 'PAR',
+    };
+    const prefix = prefixMap[data.digition] || '';
+    const prefixedId = prefix ? `${prefix}${userId}` : String(userId);
     
     const { digition, ...bodyData } = data;
     
-    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}`, {
       method: 'PUT',
       headers: getHeaders(),
       body: JSON.stringify(bodyData),
