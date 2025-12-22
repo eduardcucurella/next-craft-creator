@@ -217,7 +217,8 @@ export const usersApi = {
     const prefix = prefixMap[data.digition] || '';
     const prefixedId = prefix ? `${prefix}${userId}` : String(userId);
     
-    const { digition, login, ...bodyData } = data;
+    const { digition, login, email, ...restData } = data;
+    const bodyData = { ...restData, correu: email };
     
     const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}`, {
       method: 'POST',
