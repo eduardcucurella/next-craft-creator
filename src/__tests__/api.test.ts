@@ -20,9 +20,9 @@ describe('API Services', () => {
         login: 'newuser',
         nom: 'New',
         cognoms: 'User',
-        email: 'new@example.com',
-        primaryGroupId: 1,
-        active: true,
+        correu: 'new@example.com',
+        grup: 1,
+        actiu: true,
         notes: 'Test user',
         digition: '100',
       });

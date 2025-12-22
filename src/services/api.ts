@@ -172,9 +172,9 @@ export const usersApi = {
     login: string;
     nom: string;
     cognoms: string;
-    email: string;
-    primaryGroupId: number;
-    active: boolean;
+    correu: string;
+    grup: number;
+    actiu: boolean;
     notes: string;
     digition: string;
   }) => {
@@ -201,9 +201,9 @@ export const usersApi = {
     login: string;
     nom: string;
     cognoms: string;
-    email: string;
-    primaryGroupId: number;
-    active: boolean;
+    correu: string;
+    grup: number;
+    actiu: boolean;
     notes: string;
     digition: string;
   }) => {
@@ -217,8 +217,8 @@ export const usersApi = {
     const prefix = prefixMap[data.digition] || '';
     const prefixedId = prefix ? `${prefix}${userId}` : String(userId);
     
-    const { digition, login, email, ...restData } = data;
-    const bodyData = { ...restData, correu: email };
+    const { digition, login, correu, ...restData } = data;
+    const bodyData = { ...restData, correu: correu };
     
     const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}`, {
       method: 'POST',

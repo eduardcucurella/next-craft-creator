@@ -82,5 +82,9 @@ El mateix que hem fet amb grups ho hem de fer amb rols, necessitem guardar-nos l
 
 Quan afegim o eliminem un rol de l'usuari, si les crides al endpoint és un 200 encara que no hi hagi cap missatge de resposta json, és correcte, no és un error. De la mateixa manera, quan afegim o eliminem un rol de l'usuari, hauríem de tornar a fer la crida per veure els rols que té l'usuari per refrescar la part de rols de l'usuari.
 
+Sobre els Rols disponibles podem afegir un camp de cerca que em filtri els rols que es mostren per afegir-los ?
+
+Podries fer que quan estic afegint alguna dada per filtrar la cerca a usuaris i a rols, si premo return faci la cerca ?
+
 
 ADJUNTAR EL FITXER http://tomcat01-test.pub.dtvc.local:8214/v2/api/swagger.json

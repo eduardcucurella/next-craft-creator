@@ -47,9 +47,9 @@ const Users = () => {
     login: '',
     nom: '',
     cognoms: '',
-    email: '',
-    primaryGroupId: 0,
-    active: true,
+    correu: '',
+    grup: 0,
+    actiu: true,
     notes: '',
   });
 
@@ -237,9 +237,9 @@ const Users = () => {
       login: '',
       nom: '',
       cognoms: '',
-      email: '',
-      primaryGroupId: 0,
-      active: true,
+      correu: '',
+      grup: 0,
+      actiu: true,
       notes: '',
     });
   };
@@ -250,9 +250,9 @@ const Users = () => {
       login: '',
       nom: '',
       cognoms: '',
-      email: '',
-      primaryGroupId: 0,
-      active: true,
+      correu: '',
+      grup: 0,
+      actiu: true,
       notes: '',
     });
     setIsDialogOpen(true);
@@ -274,9 +274,9 @@ const Users = () => {
         login: fullUserData.login,
         nom: fullUserData.nom,
         cognoms: fullUserData.cognoms,
-        email: fullUserData.email,
-        primaryGroupId: fullUserData.primaryGroupId,
-        active: fullUserData.active !== undefined ? fullUserData.active : true,
+        correu: fullUserData.email,
+        grup: fullUserData.primaryGroupId,
+        actiu: fullUserData.active !== undefined ? fullUserData.active : true,
         notes: fullUserData.notes || '',
       });
       setIsDialogOpen(true);
@@ -464,8 +464,8 @@ const Users = () => {
                   <Input
                     id="new-email"
                     type="email"
-                    value={userForm.email}
-                    onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                    value={userForm.correu}
+                    onChange={(e) => setUserForm({ ...userForm, correu: e.target.value })}
                     placeholder="usuari@example.com"
                   />
                 </div>
@@ -494,8 +494,8 @@ const Users = () => {
                 <div className="space-y-2">
                   <Label htmlFor="new-primaryGroupId">Grup Principal *</Label>
                   <Select
-                    value={userForm.primaryGroupId.toString()}
-                    onValueChange={(value) => setUserForm({ ...userForm, primaryGroupId: Number(value) })}
+                    value={userForm.grup.toString()}
+                    onValueChange={(value) => setUserForm({ ...userForm, grup: Number(value) })}
                   >
                     <SelectTrigger id="new-primaryGroupId">
                       <SelectValue placeholder="Selecciona un grup..." />
@@ -516,11 +516,11 @@ const Users = () => {
                   <div className="flex items-center space-x-2 pt-2">
                     <Switch
                       id="new-active"
-                      checked={userForm.active}
-                      onCheckedChange={(checked) => setUserForm({ ...userForm, active: checked })}
+                      checked={userForm.actiu}
+                      onCheckedChange={(checked) => setUserForm({ ...userForm, actiu: checked })}
                     />
                     <Label htmlFor="new-active" className="text-sm text-muted-foreground">
-                      {userForm.active ? 'Sí' : 'No'}
+                      {userForm.actiu ? 'Sí' : 'No'}
                     </Label>
                   </div>
                 </div>
