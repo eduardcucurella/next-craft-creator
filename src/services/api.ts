@@ -220,7 +220,7 @@ export const usersApi = {
     const { digition, ...bodyData } = data;
     
     const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}`, {
-      method: 'PUT',
+      method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(bodyData),
     });
