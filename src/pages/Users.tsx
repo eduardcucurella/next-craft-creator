@@ -642,7 +642,14 @@ const Users = () => {
       {searchResults.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Resultats de la Cerca ({searchResults.length} usuaris)</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle>Resultats de la Cerca</CardTitle>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                <span>{totalElements.toLocaleString()} elements totals</span>
+                <span>•</span>
+                <span>Pàgina {page} de {totalPages.toLocaleString()}</span>
+              </div>
+            </div>
           </CardHeader>
           <CardContent>
             <Table>
