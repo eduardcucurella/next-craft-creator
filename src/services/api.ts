@@ -364,16 +364,7 @@ export const rolesApi = {
       bodyData.ordreOrdenacio = params.sortOrder;
     }
     if (params.roleid !== undefined && params.roleid !== null) {
-      // Afegir prefix segons digition
-      const prefixMap: Record<string, string> = {
-        'PRODUCCIO': 'PRO',
-        'DOCUMENTACIO': 'ARX',
-        'ARXIU': 'ARX',
-        'EMISSIO': 'EMI',
-        'PARLAMENT': 'PAR',
-      };
-      const prefix = prefixMap[params.digition] || '';
-      bodyData.rolId = `${prefix}${params.roleid}`;
+      bodyData.rolId = `${params.roleid}`;
     }
     if (params.name && params.name.trim()) {
       bodyData.nom = params.name.trim();
