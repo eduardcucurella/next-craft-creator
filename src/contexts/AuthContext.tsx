@@ -113,13 +113,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     
     // Carregar els rols després del login
     try {
-      const rolesData = await rolesApi.search({
+      const rolesResponse = await rolesApi.search({
         page: 1,
         pageSize: 1000,
         digition: decoded.dig,
       });
-      setRoles(rolesData);
-      localStorage.setItem('roles', JSON.stringify(rolesData));
+      setRoles(rolesResponse.content || []);
+      localStorage.setItem('roles', JSON.stringify(rolesResponse.content || []));
     } catch (error) {
       console.error('Error loading roles:', error);
     }
