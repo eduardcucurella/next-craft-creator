@@ -364,10 +364,12 @@ export const rolesApi = {
       bodyData.ordreOrdenacio = params.sortOrder;
     }
     if (params.roleid !== undefined && params.roleid !== null) {
-      bodyData.roleid = params.roleid;
+      // Afegir prefix segons digition
+      const prefix = params.digition === 'PRODUCCIO' ? 'P' : 'T';
+      bodyData.rolid = `${prefix}${params.roleid}`;
     }
     if (params.name && params.name.trim()) {
-      bodyData.name = params.name.trim();
+      bodyData.nom = params.name.trim();
     }
 
     const response = await fetch(`${API_BASE_URL}/rols/_cerca`, {
