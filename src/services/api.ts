@@ -366,7 +366,7 @@ export const rolesApi = {
     if (params.roleid !== undefined && params.roleid !== null) {
       // Afegir prefix segons digition
       const prefix = params.digition === 'PRODUCCIO' ? 'P' : 'T';
-      bodyData.rolid = `${prefix}${params.roleid}`;
+      bodyData.rolId = `${prefix}${params.roleid}`;
     }
     if (params.name && params.name.trim()) {
       bodyData.nom = params.name.trim();
