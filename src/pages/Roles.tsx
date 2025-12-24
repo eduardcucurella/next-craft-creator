@@ -20,13 +20,13 @@ const Roles = () => {
   const queryClient = useQueryClient();
 
   const [searchParams, setSearchParams] = useState({
-    roleid: '',
-    name: '',
+    rolId: '',
+    nom: '',
   });
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
-  const [sortBy, setSortBy] = useState<string>('name');
-  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [pagina, setPage] = useState(1);
+  const [midaPagina, setPageSize] = useState(10);
+  const [campOrdenacio, setSortBy] = useState<string>('nom');
+  const [ordreOrdenacio, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchResults, setSearchResults] = useState<any[]>([]);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<any>(null);
@@ -54,7 +54,7 @@ const Roles = () => {
   const createMutation = useMutation({
     mutationFn: rolesApi.create,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      queryClient.invalidateQueries({ queryKey: ['rols'] });
       toast({
         title: 'Rol creat',
         description: 'El rol s\'ha creat correctament.',
@@ -76,7 +76,7 @@ const Roles = () => {
     mutationFn: ({ id, data }: { id: string; data: { descripcio: string; digition: string } }) =>
       rolesApi.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      queryClient.invalidateQueries({ queryKey: ['rols'] });
       toast({
         title: 'Rol actualitzat',
         description: 'El rol s\'ha actualitzat correctament.',
@@ -98,7 +98,7 @@ const Roles = () => {
     mutationFn: ({ id, digition }: { id: string; digition: string }) =>
       rolesApi.delete(id, digition),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['roles'] });
+      queryClient.invalidateQueries({ queryKey: ['rols'] });
       toast({
         title: 'Rol eliminat',
         description: 'El rol s\'ha eliminat correctament.',
@@ -130,12 +130,12 @@ const Roles = () => {
     const user = JSON.parse(userData);
     
     searchMutation.mutate({
-      roleid: searchParams.roleid ? Number(searchParams.roleid) : undefined,
-      name: searchParams.name,
-      page,
-      pageSize,
-      sortBy,
-      sortOrder,
+      rolId: searchParams.rolId ? Number(searchParams.rolId) : undefined,
+      nom: searchParams.nom,
+      pagina,
+      midaPagina,
+      campOrdenacio,
+      ordreOrdenacio,
       digition: user.digition,
     });
   };
@@ -146,12 +146,12 @@ const Roles = () => {
     if (userData) {
       const user = JSON.parse(userData);
       searchMutation.mutate({
-        roleid: searchParams.roleid ? Number(searchParams.roleid) : undefined,
-        name: searchParams.name,
-        page: newPage,
-        pageSize,
-        sortBy,
-        sortOrder,
+        rolId: searchParams.rolId ? Number(searchParams.rolId) : undefined,
+        nom: searchParams.nom,
+        pagina: newPage,
+        midaPagina,
+        campOrdenacio,
+        ordreOrdenacio,
         digition: user.digition,
       });
     }
@@ -251,22 +251,22 @@ const Roles = () => {
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div className="space-y-2">
-              <Label htmlFor="roleid">Rol ID</Label>
+              <Label htmlFor="rolId">Rol ID</Label>
               <Input
-                id="roleid"
+                id="rolId"
                 type="number"
-                value={searchParams.roleid}
-                onChange={(e) => setSearchParams({ ...searchParams, roleid: e.target.value })}
+                value={searchParams.rolId}
+                onChange={(e) => setSearchParams({ ...searchParams, rolId: e.target.value })}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per ID..."
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="name">Nom</Label>
+              <Label htmlFor="nom">Nom</Label>
               <Input
-                id="name"
-                value={searchParams.name}
-                onChange={(e) => setSearchParams({ ...searchParams, name: e.target.value })}
+                id="nom"
+                value={searchParams.nom}
+                onChange={(e) => setSearchParams({ ...searchParams, nom: e.target.value })}
                 onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 placeholder="Cerca per nom..."
               />
@@ -274,21 +274,21 @@ const Roles = () => {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
             <div className="space-y-2">
-              <Label htmlFor="sortBy">Ordenar per</Label>
-              <Select value={sortBy} onValueChange={(value: any) => setSortBy(value)}>
-                <SelectTrigger id="sortBy">
+              <Label htmlFor="campOrdenacio">Ordenar per</Label>
+              <Select value={campOrdenacio} onValueChange={(value: any) => setSortBy(value)}>
+                <SelectTrigger id="campOrdenacio">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="name">Nom</SelectItem>
+                  <SelectItem value="nom">Nom</SelectItem>
                   <SelectItem value="description">Descripció</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="sortOrder">Ordre</Label>
-              <Select value={sortOrder} onValueChange={(value: any) => setSortOrder(value)}>
-                <SelectTrigger id="sortOrder">
+              <Label htmlFor="ordreOrdenacio">Ordre</Label>
+              <Select value={ordreOrdenacio} onValueChange={(value: any) => setSortOrder(value)}>
+                <SelectTrigger id="ordreOrdenacio">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -298,9 +298,9 @@ const Roles = () => {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="pageSize">Elements per pàgina</Label>
-              <Select value={pageSize.toString()} onValueChange={(value) => setPageSize(Number(value))}>
-                <SelectTrigger id="pageSize">
+              <Label htmlFor="midaPagina">Elements per pàgina</Label>
+              <Select value={midaPagina.toString()} onValueChange={(value) => setPageSize(Number(value))}>
+                <SelectTrigger id="midaPagina">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -359,22 +359,22 @@ const Roles = () => {
             
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                Pàgina {page}
+                Pàgina {pagina}
               </div>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious 
-                      onClick={() => page > 1 && handlePageChange(page - 1)}
-                      className={page <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      onClick={() => pagina > 1 && handlePageChange(pagina - 1)}
+                      className={pagina <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
                     />
                   </PaginationItem>
                   <PaginationItem>
-                    <PaginationLink isActive>{page}</PaginationLink>
+                    <PaginationLink isActive>{pagina}</PaginationLink>
                   </PaginationItem>
                   <PaginationItem>
                     <PaginationNext 
-                      onClick={() => handlePageChange(page + 1)}
+                      onClick={() => handlePageChange(pagina + 1)}
                       className="cursor-pointer"
                     />
                   </PaginationItem>

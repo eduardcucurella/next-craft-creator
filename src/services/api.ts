@@ -68,8 +68,8 @@ const mockGroups = [
 ];
 
 const mockRoles = [
-  { id: '1', name: 'admin', description: 'Full system access', permissions: ['read', 'write', 'delete', 'manage'] },
-  { id: '2', name: 'user', description: 'Standard user access', permissions: ['read', 'write'] },
+  { id: '1', nom: 'admin', description: 'Full system access', permissions: ['read', 'write', 'delete', 'manage'] },
+  { id: '2', nom: 'user', description: 'Standard user access', permissions: ['read', 'write'] },
 ];
 
 export const authApi = {
@@ -343,31 +343,31 @@ export const groupsApi = {
 
 export const rolesApi = {
   search: async (params: {
-    roleid?: number;
-    name?: string;
-    page: number;
-    pageSize: number;
-    sortBy?: string;
-    sortOrder?: 'asc' | 'desc';
+    rolId?: number;
+    nom?: string;
+    pagina: number;
+    midaPagina: number;
+    campOrdenacio?: string;
+    ordreOrdenacio?: 'asc' | 'desc';
     digition: string;
   }) => {
     const bodyData: Record<string, any> = {
-      pagina: params.page,
-      midaPagina: params.pageSize,
+      pagina: params.pagina,
+      midaPagina: params.midaPagina,
       digition: params.digition,
     };
 
-    if (params.sortBy) {
-      bodyData.campOrdenacio = params.sortBy;
+    if (params.campOrdenacio) {
+      bodyData.campOrdenacio = params.campOrdenacio;
     }
-    if (params.sortOrder) {
-      bodyData.ordreOrdenacio = params.sortOrder;
+    if (params.ordreOrdenacio) {
+      bodyData.ordreOrdenacio = params.ordreOrdenacio;
     }
-    if (params.roleid !== undefined && params.roleid !== null) {
-      bodyData.rolId = `${params.roleid}`;
+    if (params.rolId !== undefined && params.rolId !== null) {
+      bodyData.rolId = params.rolId;
     }
-    if (params.name && params.name.trim()) {
-      bodyData.nom = params.name.trim();
+    if (params.nom && params.nom.trim()) {
+      bodyData.nom = params.nom.trim();
     }
 
     const response = await fetch(`${API_BASE_URL}/rols/_cerca`, {
@@ -379,7 +379,7 @@ export const rolesApi = {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Search error response:', errorText);
-      throw new Error('Failed to search roles');
+      throw new Error('Failed to search rols');
     }
     
     const result = await response.json();
@@ -389,14 +389,14 @@ export const rolesApi = {
       content: result.rols || [],
       totalElements: result.elementsTotals || 0,
       totalPages: result.paginesTotals || 0,
-      page: result.pagina || params.page,
+      pagina: result.pagina || params.pagina,
     };
   },
   getAll: async () => {
     const response = await fetch(`${API_BASE_URL}/rols`, {
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to fetch roles');
+    if (!response.ok) throw new Error('Failed to fetch rols');
     return response.json();
   },
   getById: async (id: string) => {
@@ -411,7 +411,7 @@ export const rolesApi = {
       method: 'GET',
       headers: getHeaders(),
     });
-    if (!response.ok) throw new Error('Failed to fetch user roles');
+    if (!response.ok) throw new Error('Failed to fetch user rols');
     return response.json();
   },
   create: async (data: { nom: string; descripcio: string; digition: string }) => {
