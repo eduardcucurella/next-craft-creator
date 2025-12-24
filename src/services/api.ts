@@ -351,25 +351,29 @@ export const rolesApi = {
     sortOrder?: 'asc' | 'desc';
     digition: string;
   }) => {
-    const queryParams = new URLSearchParams({
-      page: params.page.toString(),
-      pageSize: params.pageSize.toString(),
+    const bodyData: Record<string, any> = {
+      pagina: params.page,
+      midaPagina: params.pageSize,
       digition: params.digition,
-      ...(params.sortBy && { sortBy: params.sortBy }),
-      ...(params.sortOrder && { sortOrder: params.sortOrder }),
-    });
+    };
 
-    // Afegir paràmetres de cerca a la query (GET no pot tenir body)
+    if (params.sortBy) {
+      bodyData.campOrdenacio = params.sortBy;
+    }
+    if (params.sortOrder) {
+      bodyData.ordreOrdenacio = params.sortOrder;
+    }
     if (params.roleid !== undefined && params.roleid !== null) {
-      queryParams.append('roleid', params.roleid.toString());
+      bodyData.roleid = params.roleid;
     }
     if (params.name && params.name.trim()) {
-      queryParams.append('name', params.name.trim());
+      bodyData.name = params.name.trim();
     }
 
-    const response = await fetch(`${API_BASE_URL}/rols/search?${queryParams}`, {
-      method: 'GET',
+    const response = await fetch(`${API_BASE_URL}/rols/_cerca`, {
+      method: 'POST',
       headers: getHeaders(),
+      body: JSON.stringify(bodyData),
     });
     
     if (!response.ok) {
@@ -378,7 +382,15 @@ export const rolesApi = {
       throw new Error('Failed to search roles');
     }
     
-    return response.json();
+    const result = await response.json();
+    
+    // Map response to expected format
+    return {
+      content: result.rols || [],
+      totalElements: result.elementsTotals || 0,
+      totalPages: result.paginesTotals || 0,
+      page: result.pagina || params.page,
+    };
   },
   getAll: async () => {
     const response = await fetch(`${API_BASE_URL}/rols`, {
