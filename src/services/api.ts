@@ -418,7 +418,17 @@ export const rolesApi = {
     return response.json();
   },
   getUserRoles: async (userId: number, digition: string) => {
-    const response = await fetch(`${API_BASE_URL}/rols/user/${userId}?digition=${digition}`, {
+    const prefixMap: Record<string, string> = {
+      'PRODUCCIO': 'PRO',
+      'DOCUMENTACIO': 'ARX',
+      'ARXIU': 'ARX',
+      'EMISSIO': 'EMI',
+      'PARLAMENT': 'PAR',
+    };
+    const prefix = prefixMap[digition] || '';
+    const prefixedId = prefix ? `${prefix}${userId}` : String(userId);
+    
+    const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}/rols`, {
       method: 'GET',
       headers: getHeaders(),
     });
