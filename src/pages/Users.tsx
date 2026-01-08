@@ -182,9 +182,11 @@ const Users = () => {
     
     const user = JSON.parse(userData);
     
+    setPage(1);
+    
     searchMutation.mutate({
       ...searchParams,
-      page,
+      page: 1,
       pageSize,
       sortBy,
       sortOrder,
