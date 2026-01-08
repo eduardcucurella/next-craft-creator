@@ -114,8 +114,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Carregar els rols després del login
     try {
       const rolesResponse = await rolesApi.search({
-        page: 1,
-        pageSize: 1000,
+        pagina: 1,
+        midaPagina: 1000,
         digition: decoded.dig,
       });
       setRoles(rolesResponse.content || []);

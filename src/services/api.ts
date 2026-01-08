@@ -172,19 +172,24 @@ export const usersApi = {
     login: string;
     nom: string;
     cognoms: string;
-    correu: string;
-    grup: number;
-    actiu: boolean;
+    email: string;
+    primaryGroupId: number;
+    active: boolean;
     notes: string;
     digition: string;
   }) => {
-    const queryParams = new URLSearchParams({
+    const bodyData = {
+      login: data.login,
+      nom: data.nom,
+      cognoms: data.cognoms,
+      email: data.email,
+      primaryGroupId: data.primaryGroupId,
+      active: data.active,
+      notes: data.notes,
       digition: data.digition,
-    });
+    };
     
-    const { digition, ...bodyData } = data;
-    
-    const response = await fetch(`${API_BASE_URL}/usuaris?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris`, {
       method: 'POST',
       headers: getHeaders(),
       body: JSON.stringify(bodyData),
