@@ -75,23 +75,7 @@ const Users = () => {
 
   const createMutation = useMutation({
     mutationFn: usersApi.create,
-    onSuccess: async (data) => {
-      // Si hi ha notes, cridar l'endpoint de notes
-      const userData = localStorage.getItem('user');
-      if (userForm.notes && userData) {
-        try {
-          const user = JSON.parse(userData);
-          await usersApi.saveNotes(data.id, userForm.notes, user.digition);
-        } catch (error) {
-          console.error('Error saving notes:', error);
-          toast({
-            title: 'Avís',
-            description: 'Usuari creat però no s\'han pogut desar les notes.',
-            variant: 'destructive',
-          });
-        }
-      }
-      
+    onSuccess: () => {
       toast({
         title: 'Usuari creat',
         description: 'L\'usuari s\'ha creat correctament.',
