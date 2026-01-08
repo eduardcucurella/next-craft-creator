@@ -239,11 +239,17 @@ export const usersApi = {
     return response.json();
   },
   delete: async (id: number, digition: string) => {
-    const queryParams = new URLSearchParams({
-      digition,
-    });
+    const prefixMap: Record<string, string> = {
+      'PRODUCCIO': 'PRO',
+      'DOCUMENTACIO': 'ARX',
+      'ARXIU': 'ARX',
+      'EMISSIO': 'EMI',
+      'PARLAMENT': 'PAR',
+    };
+    const prefix = prefixMap[digition] || '';
+    const prefixedId = prefix ? `${prefix}${id}` : String(id);
     
-    const response = await fetch(`${API_BASE_URL}/usuaris/${id}?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
