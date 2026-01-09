@@ -134,7 +134,7 @@ const Users = () => {
   });
 
   const assignRoleMutation = useMutation({
-    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: number; digition: string }) =>
+    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: string; digition: string }) =>
       usersApi.assignRole(userId, roleId, digition),
     onSuccess: () => {
       toast({
@@ -152,7 +152,7 @@ const Users = () => {
   });
 
   const removeRoleMutation = useMutation({
-    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: number; digition: string }) =>
+    mutationFn: ({ userId, roleId, digition }: { userId: number; roleId: string; digition: string }) =>
       usersApi.removeRole(userId, roleId, digition),
     onSuccess: () => {
       toast({
@@ -368,7 +368,7 @@ const Users = () => {
     try {
       await assignRoleMutation.mutateAsync({
         userId: selectedUserId,
-        roleId: Number(roleId),
+        roleId: roleId,
         digition: user.digition,
       });
       
@@ -392,7 +392,7 @@ const Users = () => {
     try {
       await removeRoleMutation.mutateAsync({
         userId: selectedUserId,
-        roleId: Number(roleId),
+        roleId: roleId,
         digition: user.digition,
       });
       

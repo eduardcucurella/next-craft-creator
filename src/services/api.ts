@@ -261,7 +261,7 @@ export const usersApi = {
     }
     return { success: true };
   },
-  assignRole: async (userId: number, roleId: number, digition: string) => {
+  assignRole: async (userId: number, roleId: string, digition: string) => {
     const prefixMap: Record<string, string> = {
       'PRODUCCIO': 'PRO',
       'DOCUMENTACIO': 'ARX',
@@ -285,12 +285,18 @@ export const usersApi = {
     const text = await response.text();
     return text ? JSON.parse(text) : { success: true };
   },
-  removeRole: async (userId: number, roleId: number, digition: string) => {
-    const queryParams = new URLSearchParams({
-      digition,
-    });
+  removeRole: async (userId: number, roleId: string, digition: string) => {
+    const prefixMap: Record<string, string> = {
+      'PRODUCCIO': 'PRO',
+      'DOCUMENTACIO': 'ARX',
+      'ARXIU': 'ARX',
+      'EMISSIO': 'EMI',
+      'PARLAMENT': 'PAR',
+    };
+    const prefix = prefixMap[digition] || '';
+    const prefixedUserId = prefix ? `${prefix}${userId}` : String(userId);
     
-    const response = await fetch(`${API_BASE_URL}/usuaris/${userId}/rol/${roleId}/eliminar?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/usuaris/${prefixedUserId}/rols/${roleId}`, {
       method: 'DELETE',
       headers: getHeaders(),
     });
