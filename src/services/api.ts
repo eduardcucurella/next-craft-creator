@@ -460,14 +460,10 @@ export const rolesApi = {
     return response.json();
   },
   update: async (id: string, data: { descripcio: string; digition: string }) => {
-    const queryParams = new URLSearchParams({
-      digition: data.digition,
-    });
-
-    const response = await fetch(`${API_BASE_URL}/rols/${id}?${queryParams}`, {
-      method: 'PUT',
+    const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
+      method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ descripcio: data.descripcio }),
+      body: JSON.stringify({ descripcio: data.descripcio, digition: data.digition }),
     });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
