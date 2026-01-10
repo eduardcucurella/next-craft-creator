@@ -459,11 +459,11 @@ export const rolesApi = {
     }
     return response.json();
   },
-  update: async (id: string, data: { descripcio: string; digition: string }) => {
+  update: async (id: string, data: { nom: string; descripcio: string; digition: string }) => {
     const response = await fetch(`${API_BASE_URL}/rols/${id}`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ descripcio: data.descripcio, digition: data.digition }),
+      body: JSON.stringify({ nom: data.nom, descripcio: data.descripcio, digition: data.digition }),
     });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
