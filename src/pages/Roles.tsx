@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { rolesApi } from '@/services/api';
 import { Button } from '@/components/ui/button';
@@ -120,7 +120,7 @@ const Roles = () => {
     },
   });
 
-  const handleSearch = () => {
+  const handleSearch = (page = pagina) => {
     const userData = localStorage.getItem('user');
     if (!userData) {
       toast({
@@ -136,13 +136,18 @@ const Roles = () => {
     searchMutation.mutate({
       rolId: searchParams.rolId ? Number(searchParams.rolId) : undefined,
       nom: searchParams.nom,
-      pagina,
+      pagina: page,
       midaPagina,
       campOrdenacio,
       ordreOrdenacio,
       digition: user.digition,
     });
   };
+
+  // Cerca automàtica al carregar la pàgina
+  useEffect(() => {
+    handleSearch(1);
+  }, []);
 
   const handlePageChange = (newPage: number) => {
     setPage(newPage);
@@ -316,7 +321,7 @@ const Roles = () => {
               </Select>
             </div>
           </div>
-          <Button onClick={handleSearch} disabled={searchMutation.isPending}>
+          <Button onClick={() => handleSearch()} disabled={searchMutation.isPending}>
             <Search className="mr-2 h-4 w-4" />
             {searchMutation.isPending ? 'Cercant...' : 'Cercar'}
           </Button>
