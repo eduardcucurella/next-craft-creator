@@ -28,6 +28,8 @@ const Roles = () => {
   const [campOrdenacio, setSortBy] = useState<string>('nom');
   const [ordreOrdenacio, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [totalElements, setTotalElements] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [editingRole, setEditingRole] = useState<any>(null);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -40,7 +42,9 @@ const Roles = () => {
   const searchMutation = useMutation({
     mutationFn: rolesApi.search,
     onSuccess: (data) => {
-      setSearchResults(Array.isArray(data) ? data : []);
+      setSearchResults(data.content || []);
+      setTotalElements(data.totalElements || 0);
+      setTotalPages(data.totalPages || 0);
     },
     onError: () => {
       toast({
@@ -322,7 +326,7 @@ const Roles = () => {
       {searchResults.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle>Resultats de la Cerca ({searchResults.length} rols)</CardTitle>
+            <CardTitle>Resultats de la Cerca</CardTitle>
           </CardHeader>
           <CardContent>
             <Table>
@@ -359,27 +363,32 @@ const Roles = () => {
             
             <div className="mt-4 flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
-                Pàgina {pagina}
+                {totalElements.toLocaleString()} elements totals
               </div>
-              <Pagination>
-                <PaginationContent>
-                  <PaginationItem>
-                    <PaginationPrevious 
-                      onClick={() => pagina > 1 && handlePageChange(pagina - 1)}
-                      className={pagina <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
-                    />
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink isActive>{pagina}</PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationNext 
-                      onClick={() => handlePageChange(pagina + 1)}
-                      className="cursor-pointer"
-                    />
-                  </PaginationItem>
-                </PaginationContent>
-              </Pagination>
+              <div className="flex items-center gap-4">
+                <div className="text-sm text-muted-foreground">
+                  Pàgina {pagina} de {totalPages.toLocaleString()}
+                </div>
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious 
+                        onClick={() => pagina > 1 && handlePageChange(pagina - 1)}
+                        className={pagina <= 1 ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationLink isActive>{pagina}</PaginationLink>
+                    </PaginationItem>
+                    <PaginationItem>
+                      <PaginationNext 
+                        onClick={() => pagina >= totalPages && handlePageChange(pagina + 1)}
+                        className={pagina >= totalPages ? 'pointer-events-none opacity-50' : 'cursor-pointer'}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
             </div>
           </CardContent>
         </Card>
