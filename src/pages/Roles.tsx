@@ -77,7 +77,7 @@ const Roles = () => {
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: { descripcio: string; digition: string } }) =>
+    mutationFn: ({ id, data }: { id: string; data: { nom: string; descripcio: string; digition: string } }) =>
       rolesApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['rols'] });
@@ -199,10 +199,11 @@ const Roles = () => {
     const user = JSON.parse(userData);
 
     if (editingRole) {
-      // Editar rol - només es pot modificar la descripció
+      // Editar rol - només es pot modificar la descripció però s'envia també el nom
       updateMutation.mutate({
         id: editingRole.id,
         data: {
+          nom: editingRole.nom,
           descripcio: formData.descripcio,
           digition: user.digition,
         },
