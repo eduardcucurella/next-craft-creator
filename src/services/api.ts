@@ -448,14 +448,10 @@ export const rolesApi = {
     return response.json();
   },
   create: async (data: { nom: string; descripcio: string; digition: string }) => {
-    const queryParams = new URLSearchParams({
-      digition: data.digition,
-    });
-
-    const response = await fetch(`${API_BASE_URL}/rols?${queryParams}`, {
+    const response = await fetch(`${API_BASE_URL}/rols`, {
       method: 'POST',
       headers: getHeaders(),
-      body: JSON.stringify({ nom: data.nom, descripcio: data.descripcio }),
+      body: JSON.stringify({ nom: data.nom, descripcio: data.descripcio, digition: data.digition }),
     });
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
